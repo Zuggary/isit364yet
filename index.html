@@ -1319,6 +1319,24 @@ var ART364 = (function () {
   "use strict";
   var L = M364, A = ART364;
 
+  // ---- anonymous step counting (live host only) -------------------------------
+  // Cloudflare Web Analytics counts a page view for a path when the page calls history.replaceState to it. A step is counted by swapping the
+  // address to a fixed step path and straight back, in one synchronous block. Only the names in STEPS exist, and every call passes one as a
+  // string literal. Nothing the visitor does or picks is ever part of a path. Off the live host this does nothing at all.
+  var LIVE = /(^|\.)isit364yet\.com$/.test(location.hostname);
+  var STEPS = { "credit-click": 1, "picked-side": 1, "boost": 1, "postcard": 1, "played": 1, "ad-hook-364": 1 };
+  var counted = Object.create(null), actor = false, boostTouched = false;     // actor: the event being handled right now is a real visitor action
+  function countStep(name) {
+    if (!LIVE || typeof name !== "string" || !Object.prototype.hasOwnProperty.call(STEPS, name) || counted[name] === 1) { return; }   // live host only, fixed names only, once per page load
+    if (location.pathname.charAt(1) === "/") { return; }      // an odd address such as //index.html: count nothing rather than risk the restore
+    counted[name] = 1;
+    var back = location.href, st = null;
+    try { st = history.state; history.replaceState(st, "", "/step/" + name); } catch (e) {}
+    finally { try { history.replaceState(st, "", back); } catch (e2) { if (location.href !== back) { location.replace(back); } } }   // the visitor always ends on the address they came with
+  }
+  window.countStep = countStep;      // the counter loader at the end of the page calls it once, for the ad name
+  ["click", "pointerdown", "keydown"].forEach(function (t) { document.addEventListener(t, function (ev) { actor = ev.isTrusted === true; setTimeout(function () { actor = false; }, 0); }, true); });
+
   // ---- Built-in fallback, used only when status.json does not load -----------
   // Start of the outage. 8:17 AM PST on 2026-11-12 is 16:17 UTC (Microsoft's stated start for EX1550543).
   var OUTAGE_START = Date.UTC(2026, 10, 12, 16, 17, 0);
@@ -1960,8 +1978,9 @@ var ART364 = (function () {
     $("hours-l").hidden = box.hidden;
     setText($("hours-l"), picked ? "Your guess:" : "Optional: guess when it's fixed.");
   }
-  $("t5").addEventListener("click", function () { pickTeam("5"); });
-  $("t4").addEventListener("click", function () { pickTeam("4"); });
+  $("t5").addEventListener("click", function (ev) { if (ev.isTrusted) { countStep("picked-side"); } pickTeam("5"); });
+  $("t4").addEventListener("click", function (ev) { if (ev.isTrusted) { countStep("picked-side"); } pickTeam("4"); });
+  $("owed").addEventListener("click", function (ev) { var t = ev.target; if (ev.isTrusted && t && t.closest && t.closest("a")) { countStep("credit-click"); } });   // counts, never delays or stops the link
   // hold the button and the 5 musters its strength
   (function () {
     var el = $("t5");
@@ -2031,11 +2050,13 @@ var ART364 = (function () {
   function boostRelease() {
     clearTimeout(boostT); boostHeld = false;
     if (!parseFloat(boost.value)) { return; }
+    if (boostTouched) { countStep("boost"); }
     boost.value = "0"; boostLift();
     boostBox.classList.toggle("held", false);
     speak(L.pick(boostSays), 2600, "climb");
   }
-  boost.addEventListener("input", function () {
+  boost.addEventListener("input", function (ev) {
+    if (ev.isTrusted) { boostTouched = true; }
     boostBox.classList.toggle("held", true);
     boostLift();
     clearTimeout(boostT);
@@ -2104,7 +2125,8 @@ var ART364 = (function () {
     return (p === "live" ? "Email is down. If it stays down 24 hours, 365 turns into 364. Check on the 5: "
       : V.state === "party" ? "Microsoft's status page still shows the incident open, past a full day. Email may work again for you. 365 is 364 for now. " : p === "party" ? "Email was down a full day. 365 is now 364. " : p === "off" ? "Email came back in time. 365 stands. " : "Email works. The 5 is resting. ") + HERE;
   }
-  $("postcard-btn").addEventListener("click", function () {
+  $("postcard-btn").addEventListener("click", function (ev) {
+    if (ev.isTrusted) { countStep("postcard"); }
     var d = $("pc");
     pc.fmt = mq("(max-width: 640px)") ? "tall" : "wide";
     pcBuild();
@@ -2147,6 +2169,7 @@ var ART364 = (function () {
   function gRunning() { return G.started && !G.over; }
   function gStart() {
     if (G.over && Date.now() - gOverAt < 700) { return; }
+    if (actor) { countStep("played"); }
     G = gFresh(); G.started = true; gLast = Date.now(); gNext = gLast + 500; gAcc = 0; cursor = 4; flash.at = 0;
     resultHide();
     beep(660, 0.05); beep(880, 0.08, 0.07);
@@ -2632,7 +2655,7 @@ var ART364 = (function () {
 </script>
 <script data-counter>
   // Cloudflare Web Analytics: counts visits, sets no cookie (see privacy.html). It loads on the live site only, so tests and local copies send nothing.
-  if (/(^|\.)isit364yet\.com$/.test(location.hostname)) { (function () { var s = document.createElement("script"); s.type = "module"; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.setAttribute("data-cf-beacon", '{"token": "9e07e581ca6641f9bf94c04455f48ed1"}'); document.head.appendChild(s); })(); }
+  if (/(^|\.)isit364yet\.com$/.test(location.hostname)) { (function () { var s = document.createElement("script"); s.type = "module"; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.setAttribute("data-cf-beacon", '{"token": "9e07e581ca6641f9bf94c04455f48ed1"}'); s.addEventListener("load", function () { if (!window.countStep) { return; } var c = new URLSearchParams(location.search).get("utm_campaign"); if (c === "hook-364") { window.countStep("ad-hook-364"); } }); document.head.appendChild(s); })(); }
 </script>
 </body>
 </html>
