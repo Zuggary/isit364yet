@@ -126,6 +126,31 @@
     .say .note { margin-bottom: 4px; }
     .say .scrub input { height: 38px; }
   }
+  /* still down past 24 hours: the 5 on the ground, trying to climb the right post */
+  /* The lane is the sign's own picture box (1000 x 700). The 5 stands in the empty space under the beam, beside the right post. */
+  .cl-lane { position: absolute; left: 0; top: 0; width: 100%; aspect-ratio: 1000 / 700; z-index: 3; pointer-events: none; }
+  .cl-ground { position: absolute; left: 70%; width: 19.6%; top: calc(var(--rest, 96) * 1%); height: 7px; margin-top: -2px; border-radius: 4px; background: var(--ink); }
+  .climber { position: absolute; left: 75.6%; width: 12.8%; aspect-ratio: 238 / 350; bottom: calc((100 - var(--rest, 96)) * 1%);
+    transform: translateY(calc(var(--lift, 0) * -1px)); transition: transform .7s cubic-bezier(.4, 0, .3, 1); }
+  .climber.held { transition: none; }
+  .climber svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .climber .cl-in { width: 100%; height: 100%; transform-origin: 50% 100%; animation: climb 7s ease-in-out infinite; }
+  .climber.held .cl-in { animation: none; }
+  @keyframes climb {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    14% { transform: translateY(-9%) rotate(-3deg); }
+    26% { transform: translateY(-16%) rotate(2deg); }
+    32% { transform: translateY(-17%) rotate(-2deg); }
+    38% { transform: translateY(-2%) rotate(6deg); }
+    42% { transform: translateY(0) rotate(0); }
+    70% { transform: translateY(0) rotate(0); }
+  }
+  .boost { margin-top: 12px; }
+  .say .scrub.boost input { height: 44px; }
+  .boost input::-webkit-slider-runnable-track, .boost input::-moz-range-track { background: linear-gradient(to right, var(--four) 0, var(--four) var(--now), var(--white) var(--now)); }
+  .sign.up #bubble.from-climb { left: auto; right: 25.4%; top: 0; bottom: auto; margin: calc((var(--rest, 96) - 27) * .7%) 0 0; max-width: 34%; transform-origin: 100% 50%; }
+  .sign.up #bubble.from-climb::after { left: auto; right: -13px; top: 50%; bottom: auto; margin-top: -7px; border: 7px solid transparent; border-right-width: 0; border-left-color: var(--white); }
+  @media (min-width: 1040px) { .sign.up #bubble.from-climb { max-width: 16.5%; } }
   .below { padding-top: 16px; padding-bottom: 26px; }
   .hours { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
   .chip { min-height: 40px; padding: 4px 12px; border: 2px solid var(--ink); border-radius: 20px; background: var(--sky); font: 600 14px/1.15 var(--text); }
@@ -355,7 +380,7 @@
     }
   }
   body:has(dialog[open]) { overflow: hidden; }
-  @media (prefers-reduced-motion: reduce) { .hop, .cab, #peek svg, .result:popover-open { animation: none; transition: none; } :root { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .climber, .climber .cl-in { animation: none; transition: none; } .climber .cl-in { transform: rotate(-4deg); } .hop, .cab, #peek svg, .result:popover-open { animation: none; transition: none; } :root { transition: none; } }
   #confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
 </style>
 </head>
@@ -370,6 +395,7 @@
     <button class="numpoke" id="poke3" type="button" aria-label="Poke the 3"></button>
     <button class="numpoke" id="poke6" type="button" aria-label="Poke the 6"></button>
     <button id="peek" type="button" aria-label="Who is that, peeking?"><svg viewBox="0 0 100 150" aria-hidden="true" focusable="false"><path d="M50 4l-14 30h28z" fill="#FF5C7A" stroke="#2B2550" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="4" r="6" fill="#FFFFFF" stroke="#2B2550" stroke-width="4"/><path d="M60 40L18 104H86M60 40V146" fill="none" stroke="#FFC233" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><circle cx="54" cy="70" r="5" fill="#2B2550"/><circle cx="70" cy="70" r="5" fill="#2B2550"/></svg></button>
+    <div class="cl-lane" id="climber-lane" hidden><div class="cl-ground"></div><div class="climber" id="climber"><div class="cl-in"><svg id="climber-art" viewBox="-6 -60 238 350" aria-hidden="true" focusable="false"></svg></div></div></div>
     <p id="bubble" role="status" hidden></p>
     <div class="say posts between">
 
@@ -386,6 +412,10 @@
       <div class="scrub" id="scrub-box">
         <label for="scrub">Drag through the day <output id="scrub-out" for="scrub"></output></label>
         <input type="range" id="scrub" min="0" max="24" step="0.05" value="0">
+      </div>
+      <div class="scrub boost" id="boost-box" hidden>
+        <label for="boost">Give the 5 a boost</label>
+        <input type="range" id="boost" min="0" max="100" step="1" value="0" style="--now: 0%">
       </div>
     </div>
   </div>
@@ -641,7 +671,7 @@ var M364 = (function () {
     return !!(bet && (bet.team === "5" || bet.team === "4") && bet.id === id);
   }
   function betTeamWinner(winner) { return winner < 0 ? "" : winner === 4 ? "4" : "5"; }
-  function betNote(bet, winner) {
+  function betNote(bet, winner, ongoing) {
     var won = betTeamWinner(winner);
     if (!won) {
       if (!bet) { return "Pick a side. The bet: one slice of cake."; }
@@ -649,7 +679,7 @@ var M364 = (function () {
         " Cake is on the line. Tap the other side to switch.";
     }
     var line = won === "5" ? "Team 5 wins: it held on." : "Team 4 wins: it let go.";
-    if (!bet) { return line + " Betting is closed."; }
+    if (!bet) { return line + (ongoing ? " The outage is not over." : " Betting is closed."); }
     if (bet.team !== won) { return line + " You owe the IT team a slice of cake."; }
     return line + " You called it. One slice of cake is yours.";
   }
@@ -946,6 +976,12 @@ var M364 = (function () {
     hold: ["Thank you. I felt that.", "Team 5! Team 5!", "You believe in me. Bold."],
     letgo: ["Wow. Okay. Noted.", "I thought we were friends.", "The 4 put you up to this."]
   };
+  // The still-going clock: 25:31:07. Under reduced motion the seconds stay at 00 and it moves once a minute.
+  function clockText(ms, slow) {
+    var s = Math.max(0, Math.floor(ms / 1000));
+    if (slow) { s -= s % 60; }
+    return pad(Math.floor(s / 3600)) + ":" + pad(Math.floor((s % 3600) / 60)) + ":" + pad(s % 60);
+  }
   function hangText(ms) {
     var m = Math.max(0, Math.floor(ms / 60000)), h = Math.floor(m / 60);
     return h + " h " + (m % 60) + " m";
@@ -954,7 +990,7 @@ var M364 = (function () {
   return {
     DAY: DAY, pick: pick, pad: pad,
         statusNormalize: statusNormalize, incidentScore: incidentScore, dayLabel: dayLabel, clockState: clockState,
-    yearTally: yearTally, view: view, pose: pose, ago: ago, QUIPS: QUIPS, hangText: hangText,
+    yearTally: yearTally, view: view, pose: pose, ago: ago, QUIPS: QUIPS, hangText: hangText, clockText: clockText,
     BUCKETS: BUCKETS, betResolve: betResolve, betValid: betValid, betNote: betNote, betTeamWinner: betTeamWinner,
     SQUARES: SQUARES, FREE: FREE, LINES: LINES, B_N: B_N, B_MID: B_MID, bingoDeal: bingoDeal, bingoValid: bingoValid,
     bingoScore: bingoScore,
@@ -1143,6 +1179,14 @@ var ART364 = (function () {
     }
     return out + '</g></g>';
   }
+  // The 5 on the ground at the foot of the right post, trying to climb it. Own 200 x 250 box plus room for arms and legs.
+  function climber() {
+    var out = '<g class="five climb">';
+    out += line("M150 22L212 -14", 14, C.five) + '<circle cx="216" cy="-16" r="13" fill="' + C.five + '"/>';   // the right hand grips the post
+    out += line("M62 30q-30 8-44 44", 14, C.five) + '<circle cx="16" cy="76" r="13" fill="' + C.five + '"/>';   // the left arm flails
+    out += legs() + numeral("5", 0, 0, C.five) + face("worried") + drop(20, -6, "sweat");
+    return out + '</g>';
+  }
   function cloud(x, y, k) {
     return '<path transform="translate(' + x + ' ' + y + ') scale(' + k + ')" d="M0 40a34 34 0 0 1 60-18a26 26 0 0 1 44 18a14 14 0 0 1 0 28H0a14 14 0 0 1 0-28z"/>';
   }
@@ -1260,7 +1304,7 @@ var ART364 = (function () {
   function favicon(ch, sky) {
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -15 240 280"><rect x="-20" y="-15" width="240" height="280" rx="50" fill="' + (sky || C.sky) + '"/>' + numeral(ch, 0, 0, ch === "4" ? C.four : C.five) + '</svg>';
   }
-  return { C: C, VB_W: VB_W, VB_H: VB_H, SLOT: SLOT, BEAM_Y: BEAM_Y, BEAM_H: BEAM_H, STAND_Y: STAND_Y, GLYPH: GLYPH, STAGES: STAGES,
+  return { climber: climber, C: C, VB_W: VB_W, VB_H: VB_H, SLOT: SLOT, BEAM_Y: BEAM_Y, BEAM_H: BEAM_H, STAND_Y: STAND_Y, GLYPH: GLYPH, STAGES: STAGES,
            stage: stage, grip: grip, rigPose: rigPose, sunElevation: sunElevation, skyAt: skyAt, mix: mix, contrast: contrast, SKY: SKY,
            scene: scene, ground: ground, postcard: postcard, wrapText: wrapText, favicon: favicon, numeral: numeral };
 })();
@@ -1745,6 +1789,11 @@ var ART364 = (function () {
   function answerFor(p) {
     return p === "live" ? "Not yet." : p === "party" ? "Yes." : p === "off" ? "No. The 5 made it." : p === "retired" ? "Yes, all year." : "Not today.";
   }
+  var restNow = 0;   // where the 5 stands, as a share of the picture height: wide screens keep it inside the first screen
+  function setRest() {
+    var r = mq("(min-width: 1040px)") ? 88 : 96;
+    if (r !== restNow) { restNow = r; document.documentElement.style.setProperty("--rest", String(r)); }
+  }
   function words() {
     var p = L.pose(V), last = V.last, live = p === "live";
     setText($("answer"), answerFor(p));
@@ -1752,6 +1801,11 @@ var ART364 = (function () {
     $("plaque").hidden = !(p === "idle" && V.daysSince >= 0);
     $("teams").hidden = !live;
     $("scrub-box").hidden = !live;
+    var going = V.state === "party";   // past 24 hours and the scorekeeper still has an open incident
+    $("boost-box").hidden = !going;
+    $("climber-lane").hidden = !going || busy;
+    setRest();
+    if (going && !$("climber")._drawn) { $("climber")._drawn = true; $("climber-art").innerHTML = A.climber(); }
     $("peek").hidden = !live;
     $("stats").hidden = p === "idle";
     document.documentElement.style.setProperty("--frac", live ? V.c.frac.toFixed(4) : p === "party" || p === "retired" ? "1" : "0");
@@ -1759,8 +1813,8 @@ var ART364 = (function () {
       leadSet("Microsoft 365 email is down.", "If it stays down 24 hours, the 5 falls and 365 turns into 364.");
       stat(2, V.c.hms, "until the 5 falls"); stat(1, L.hangText(V.c.downMs), "down so far");
     } else if (V.state === "party") {
-      leadSet("Microsoft 365 email has been down 24 hours.", "So the 5 fell, and 365 is now 364. The 4 brought a hat.");
-      stat(2, "364", "the new number"); stat(1, L.hangText(V.c.downMs), "down so far");
+      leadSet("Still down, says Microsoft's status page.", "The 5 fell at 24 hours, so 365 is 364 for now. The 5 is trying to climb back. It gets home when email works again.");
+      stat(2, "364", "for now"); stat(1, L.clockText(V.c.downMs, RM), "down and counting");
     } else if (p === "party") {
       leadSet("The 5 fell.", "Email was down " + last.hours.toFixed(0) + " hours on " + L.dayLabel(last.id) + ", a full day, so 365 became 364. It works now.");
       stat(2, "364", "the new number"); stat(1, last.hours.toFixed(1) + " h", "email was down");
@@ -1775,7 +1829,7 @@ var ART364 = (function () {
       setText($("plaque-n"), String(Math.max(0, V.daysSince)));
       stat(2, "", ""); stat(1, "", "");
     }
-    var title = live ? "Not yet · " + V.c.hms.slice(0, 5) + " to go" : answerFor(p) + " · Is it 364 yet?";
+    var title = live ? "Not yet · " + V.c.hms.slice(0, 5) + " to go" : going ? "Yes, for now · Microsoft says still down · Is it 364 yet?" : answerFor(p) + " · Is it 364 yet?";
     if (document.title !== title) { document.title = title; }
     var icon = (p === "party" || p === "retired" ? "4" : "5");
     if (icon !== lastIcon) {
@@ -1788,6 +1842,7 @@ var ART364 = (function () {
   function altText() {
     var p = L.pose(V), s = answerFor(p) + " ";
     if (p === "live") { s += "Email has been down " + L.hangText(V.c.downMs) + ". The 5's grip: " + A.STAGES[A.stage(V.c.frac)].name + "."; }
+    else if (V.state === "party") { s += "Microsoft's status page still shows email down, past a full day. 365 is 364 for now. The 5 is trying to climb back."; }
     else { s += $("lead").textContent; }
     return s;
   }
@@ -1797,7 +1852,7 @@ var ART364 = (function () {
     if (first) {
       renderScene(true);
       // On a first load the 4 is simply there. It only drops in after a fall that the visitor watched.
-      if (p === "party" && V.state === "party") { setTimeout(function () { confetti(12000); SND.horn(); }, 500); }
+      if (p === "party" && V.state === "party") { setTimeout(function () { confetti(2000); SND.horn(); }, 500); }
     } else if (was === "live" && p === "party" && startFall()) {
       /* the loop finishes the job */
     } else {
@@ -1881,7 +1936,7 @@ var ART364 = (function () {
     betKey = key;
     $("t5").setAttribute("aria-pressed", mine && mine.team === "5" ? "true" : "false");
     $("t4").setAttribute("aria-pressed", mine && mine.team === "4" ? "true" : "false");
-    setText($("bet-note"), ctx ? L.betNote(mine, res.winner) : "Sides open the next time email breaks.");
+    setText($("bet-note"), ctx ? L.betNote(mine, res.winner, !!MODEL.current) : "Sides open the next time email breaks.");
     var box = $("hours"), open = !!mine && mine.team === "5" && ctx.end === null && res.winner < 0, i, el, picked = mine && typeof mine.i === "number";
     box.hidden = true; // the guess chips are retired; a stored guess is ignored
     for (i = 0; i < 4; i++) {
@@ -1950,6 +2005,35 @@ var ART364 = (function () {
     scrub.addEventListener(ev, function () { scrubHeld = false; if (ev !== "blur" || previewH !== null) { scrubRelease(); } });
   });
 
+  // ---- still down past 24 hours: give the 5 a boost; it slides back, because it cannot get home yet ----
+  var boost = $("boost"), boostBox = $("climber"), boostHeld = false, boostKey = false, boostT = 0, boostSays = ["Not until email works.", "So close. Ask Microsoft.", "Thanks. Gravity disagrees.", "I'll be back."];
+  function boostLift() {
+    setRest();
+    var v = clamp(parseFloat(boost.value) || 0, 0, 100) / 100, ar = $("climber-lane").getBoundingClientRect(), ch = boostBox.clientHeight || boostBox.getBoundingClientRect().height || 0;
+    // from its resting place up to the underside of the beam: the top of the numeral (a fifth down the box) just touches it
+    var travel = Math.max(0, ar.height * restNow / 100 - ch - (ar.height * 330 / A.VB_H - ch * 0.2));
+    boostBox.style.setProperty("--lift", (v * travel).toFixed(1));
+    boost.style.setProperty("--now", (v * 100).toFixed(0) + "%");
+    boost.setAttribute("aria-valuetext", "Boost " + Math.round(v * 100) + " percent");
+  }
+  function boostRelease() {
+    clearTimeout(boostT); boostHeld = false;
+    if (!parseFloat(boost.value)) { return; }
+    boost.value = "0"; boostLift();
+    boostBox.classList.toggle("held", false);
+    speak(L.pick(boostSays), 2600, "climb");
+  }
+  boost.addEventListener("input", function () {
+    boostBox.classList.toggle("held", true);
+    boostLift();
+    clearTimeout(boostT);
+    boostT = setTimeout(function () { if (!boostHeld) { boostRelease(); } }, 1500);
+  });
+  boost.addEventListener("keydown", function () { boostKey = true; });
+  boost.addEventListener("pointerdown", function () { boostHeld = true; boostKey = false; clearTimeout(boostT); });
+  ["pointerup", "pointercancel", "blur"].forEach(function (ev) { boost.addEventListener(ev, boostRelease); });
+  boost.addEventListener("change", function () { if (!boostKey) { boostRelease(); } });
+
   // =============================================================================
   // The postcard: the scene and the words on a canvas, then share or save
   // =============================================================================
@@ -2006,7 +2090,7 @@ var ART364 = (function () {
   function pcText() {
     var p = L.pose(V);
     return (p === "live" ? "Email is down. If it stays down 24 hours, 365 turns into 364. Check on the 5: "
-      : p === "party" ? "Email was down a full day. 365 is now 364. " : p === "off" ? "Email came back in time. 365 stands. " : "Email works. The 5 is resting. ") + HERE;
+      : V.state === "party" ? "Microsoft's status page still shows email down, past a full day. 365 is 364 for now. " : p === "party" ? "Email was down a full day. 365 is now 364. " : p === "off" ? "Email came back in time. 365 stands. " : "Email works. The 5 is resting. ") + HERE;
   }
   $("postcard-btn").addEventListener("click", function () {
     var d = $("pc");
@@ -2449,7 +2533,7 @@ var ART364 = (function () {
   }
   function drawGround() {
     var g = $("ground");
-    if (g) { g.innerHTML = A.ground(V.state === "party"); }
+    if (g) { g.innerHTML = A.ground(false); }   // no 5 on the mattress: it is outside, climbing
   }
 
   // ---- keys: each game has its own; typing "dns" earns an eye roll ----
