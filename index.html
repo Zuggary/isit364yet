@@ -98,6 +98,9 @@
   .say { padding-top: 10px; padding-bottom: 14px; }
   .lead { margin: 0 0 10px; font-size: 18px; line-height: 1.35; position: relative; z-index: 1; }
   .lead b { font-weight: 700; }
+  .lead a { color: inherit; text-underline-offset: 3px; }
+  .lead .why { display: block; margin-top: .35em; font-size: .8em; line-height: 1.3; }
+  .lead .why a { font-weight: 700; }
   .stats { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0 0 6px; }
   .stats b { display: block; font: 800 clamp(28px, 7.6vw, 46px)/1.08 var(--head); font-variant-numeric: tabular-nums lining-nums; }
   .stats span { display: block; font-size: 14px; line-height: 1.3; font-weight: 600; }
@@ -391,7 +394,7 @@
 <body>
 <header class="hero wrap">
   <h1><svg class="layer back" viewBox="-20 -6 148 100" aria-hidden="true" focusable="false"><path d="M0 40a34 34 0 0 1 60-18a26 26 0 0 1 44 18a14 14 0 0 1 0 28H0a14 14 0 0 1 0-28z"/></svg><span class="q">Is it 364 yet?</span><span id="answer">Not yet.</span><svg class="layer front" viewBox="-30 -34 76 52" aria-hidden="true" focusable="false"><path d="M-22 0q10-14 30-8l14-6l-4 12q-4 14-24 14q-14 0-16-12z" fill="#6E6A8F"/><path d="M-8 -2q8-24 22-26q-2 16-10 28z" fill="#2B2550"/><circle cx="14" cy="-9" r="2" fill="#FFFFFF"/><rect x="20" y="-4" width="20" height="13" rx="2" fill="#FFFFFF" stroke="#2B2550" stroke-width="1.5"/><path d="M20 -4l10 7l10-7" fill="none" stroke="#2B2550" stroke-width="1.5"/><path d="M27 13l6 6M33 13l-6 6" stroke="#FF5C7A" stroke-width="2.4" stroke-linecap="round"/></svg></h1>
-  <p class="lead"><svg class="mailx" viewBox="0 0 44 32" aria-hidden="true" focusable="false"><rect x="2" y="4" width="34" height="24" rx="4" fill="#FFFFFF" stroke="#2B2550" stroke-width="3"/><path d="M4 7l15 12L34 7" fill="none" stroke="#2B2550" stroke-width="3" stroke-linejoin="round"/><circle cx="35" cy="9" r="8" fill="#FF5C7A" stroke="#2B2550" stroke-width="2.5"/><path d="M32 6l6 6M38 6l-6 6" stroke="#2B2550" stroke-width="2.5" stroke-linecap="round"/></svg><span id="lead"><b>Microsoft 365 has an open incident, says Microsoft.</b> If it stays open 24 hours, the 5 falls and 365 turns into 364.</span></p>
+  <p class="lead"><svg class="mailx" viewBox="0 0 44 32" aria-hidden="true" focusable="false"><rect x="2" y="4" width="34" height="24" rx="4" fill="#FFFFFF" stroke="#2B2550" stroke-width="3"/><path d="M4 7l15 12L34 7" fill="none" stroke="#2B2550" stroke-width="3" stroke-linejoin="round"/><circle cx="35" cy="9" r="8" fill="#FF5C7A" stroke="#2B2550" stroke-width="2.5"/><path d="M32 6l6 6M38 6l-6 6" stroke="#2B2550" stroke-width="2.5" stroke-linecap="round"/></svg><span id="lead"><b>Microsoft 365 has an open incident, says <a href="https://status.cloud.microsoft/" target="_blank" rel="noopener noreferrer">Microsoft</a>.</b> If it stays open 24 hours, the 5 falls and 365 turns into 364.</span><span class="why" id="lead-why" hidden>On a paid business plan? <a href="https://www.downtimecredit.com/">See if you can ask for a service credit&nbsp;&rarr;</a></span></p>
   <div class="sign" id="sign">
     <svg id="art" viewBox="0 0 1000 700" aria-hidden="true" focusable="false"></svg>
     <svg id="spill" viewBox="0 0 1000 700" aria-hidden="true" focusable="false"><g class="cup"><path d="M826 135h34v26a10 10 0 0 1-10 10h-14a10 10 0 0 1-10-10z" fill="#FFFFFF" stroke="#2B2550" stroke-width="3"/><path d="M860 143h6a8 8 0 0 1 0 16h-6" fill="none" stroke="#FFFFFF" stroke-width="5"/></g><g class="splash" fill="#7A4A2E"><circle cx="836" cy="150" r="6"/><circle cx="852" cy="160" r="4.5"/><circle cx="844" cy="176" r="5"/></g></svg>
@@ -1324,7 +1327,7 @@ var ART364 = (function () {
   // address to a fixed step path and straight back, in one synchronous block. Only the names in STEPS exist, and every call passes one as a
   // string literal. Nothing the visitor does or picks is ever part of a path. Off the live host this does nothing at all.
   var LIVE = /(^|\.)isit364yet\.com$/.test(location.hostname);
-  var STEPS = { "credit-click": 1, "picked-side": 1, "boost": 1, "postcard": 1, "played": 1, "ad-hook-364": 1 };
+  var STEPS = { "credit-click": 1, "credit-click-lead": 1, "picked-side": 1, "boost": 1, "postcard": 1, "played": 1, "ad-hook-364": 1 };
   var counted = Object.create(null), actor = false, boostTouched = false;     // actor: the event being handled right now is a real visitor action
   function countStep(name) {
     if (!LIVE || typeof name !== "string" || !Object.prototype.hasOwnProperty.call(STEPS, name) || counted[name] === 1) { return; }   // live host only, fixed names only, once per page load
@@ -1797,11 +1800,18 @@ var ART364 = (function () {
   // Words under the sign, the teams, the scrubber
   // =============================================================================
   var shownPose = "", shown364 = false, lastIcon = "";
-  function leadSet(bold, rest) {
-    var el = $("lead"), key = bold + "|" + rest;
+  // link: the words inside the bold part that link to Microsoft's status page (built from DOM nodes, never from data)
+  function leadSet(bold, rest, link) {
+    var el = $("lead"), key = bold + "|" + rest + "|" + (link || "");
     if (el._k === key) { return; }
     el._k = key; el.textContent = "";
-    var b = document.createElement("b"); b.textContent = bold;
+    var b = document.createElement("b"), i = link ? bold.indexOf(link) : -1;
+    if (i < 0) { b.textContent = bold; }
+    else {
+      var a = document.createElement("a");
+      a.setAttribute("href", "https://status.cloud.microsoft/"); a.setAttribute("target", "_blank"); a.setAttribute("rel", "noopener noreferrer"); a.textContent = link;
+      b.appendChild(document.createTextNode(bold.slice(0, i))); b.appendChild(a); b.appendChild(document.createTextNode(bold.slice(i + link.length)));
+    }
     el.appendChild(b); el.appendChild(document.createTextNode(" " + rest));
   }
   function stat(n, a, b) { setText($("n" + n), a); setText($("n" + n + "l"), b); }
@@ -1833,17 +1843,18 @@ var ART364 = (function () {
     $("stats").hidden = p === "idle";
     // The credit prompt: only while an outage is open or just ended, and only past 44 minutes (the SLA's first credit level starts under 99.9% in a month).
     var open = live || V.state === "party", longEnough = open ? V.c.downMs >= 44 * 60000 : !!last && last.hours * 60 >= 44;
-    $("owed").hidden = !((live || p === "party" || p === "off") && longEnough);
+    var showOwed = (live || p === "party" || p === "off") && longEnough;
+    $("owed").hidden = !showOwed; $("lead-why").hidden = !showOwed;      // one rule for the card and the short line in the lead
     setText($("owed-q"), open ? "Work email down too?" : "Was your work email down too?");
     // Under the clock when there are no team buttons; under the bet line while the game is on.
     var bn = $("bet-note"), ow = $("owed");
     if (bn && ow && bn.parentNode && bn.parentNode.insertBefore) { bn.parentNode.insertBefore(ow, live ? bn.nextSibling : bn); }
     document.documentElement.style.setProperty("--frac", live ? V.c.frac.toFixed(4) : p === "party" || p === "retired" ? "1" : "0");
     if (live) {
-      leadSet("Microsoft 365 has an open incident, says Microsoft.", "If it stays open 24 hours, the 5 falls and 365 turns into 364.");
+      leadSet("Microsoft 365 has an open incident, says Microsoft.", "If it stays open 24 hours, the 5 falls and 365 turns into 364.", "Microsoft");
       stat(2, V.c.hms, "until the 5 falls"); stat(1, L.hangText(V.c.downMs), "down so far");
     } else if (V.state === "party") {
-      leadSet("Not over yet, says Microsoft's status page.", "Its incident is still open, even if your email is back. The 5 fell at 24 hours, so 365 is 364 for now. It gets home when Microsoft closes the incident.");
+      leadSet("Not over yet, says Microsoft's status page.", "The 5 fell at 24 hours and gets home when Microsoft closes the incident, even if your email is back.", "Microsoft's status page");
       stat(2, "364", "for now"); stat(1, L.clockText(V.c.downMs, RM), "incident open");
     } else if (p === "party") {
       leadSet("The 5 fell.", "Email was down " + last.hours.toFixed(0) + " hours on " + L.dayLabel(last.id) + ", a full day, so 365 became 364. It works now.");
@@ -1980,6 +1991,7 @@ var ART364 = (function () {
   }
   $("t5").addEventListener("click", function (ev) { if (ev.isTrusted) { countStep("picked-side"); } pickTeam("5"); });
   $("t4").addEventListener("click", function (ev) { if (ev.isTrusted) { countStep("picked-side"); } pickTeam("4"); });
+  $("lead-why").addEventListener("click", function (ev) { var t = ev.target; if (ev.isTrusted && t && t.closest && t.closest("a")) { countStep("credit-click-lead"); } });   // counts, never delays or stops the link
   $("owed").addEventListener("click", function (ev) { var t = ev.target; if (ev.isTrusted && t && t.closest && t.closest("a")) { countStep("credit-click"); } });   // counts, never delays or stops the link
   // hold the button and the 5 musters its strength
   (function () {
