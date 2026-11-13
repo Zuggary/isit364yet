@@ -56,10 +56,11 @@
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .wrap { max-width: var(--wide); margin: 0 auto; padding: 0 16px; position: relative; z-index: 1; }
   /* The posts of the sign run down the page behind everything, to the ground. */
+  /* A background position in % is a share of (box width - post width), so 11.2% and 88.4% of the box are 11.499% and 90.76% here. */
   .posts {
     background:
-      linear-gradient(var(--ink), var(--ink)) calc(100% * .112) 0 / var(--post-w) 100% no-repeat,
-      linear-gradient(var(--ink), var(--ink)) calc(100% * .884) 0 / var(--post-w) 100% no-repeat;
+      linear-gradient(var(--ink), var(--ink)) 11.499% 0 / var(--post-w) 100% no-repeat,
+      linear-gradient(var(--ink), var(--ink)) 90.76% 0 / var(--post-w) 100% no-repeat;
   }
   .between { padding-left: 16.5%; padding-right: 16.5%; }
 
@@ -387,7 +388,7 @@
 <body>
 <header class="hero wrap">
   <h1><svg class="layer back" viewBox="-20 -6 148 100" aria-hidden="true" focusable="false"><path d="M0 40a34 34 0 0 1 60-18a26 26 0 0 1 44 18a14 14 0 0 1 0 28H0a14 14 0 0 1 0-28z"/></svg><span class="q">Is it 364 yet?</span><span id="answer">Not yet.</span><svg class="layer front" viewBox="-30 -34 76 52" aria-hidden="true" focusable="false"><path d="M-22 0q10-14 30-8l14-6l-4 12q-4 14-24 14q-14 0-16-12z" fill="#6E6A8F"/><path d="M-8 -2q8-24 22-26q-2 16-10 28z" fill="#2B2550"/><circle cx="14" cy="-9" r="2" fill="#FFFFFF"/><rect x="20" y="-4" width="20" height="13" rx="2" fill="#FFFFFF" stroke="#2B2550" stroke-width="1.5"/><path d="M20 -4l10 7l10-7" fill="none" stroke="#2B2550" stroke-width="1.5"/><path d="M27 13l6 6M33 13l-6 6" stroke="#FF5C7A" stroke-width="2.4" stroke-linecap="round"/></svg></h1>
-  <p class="lead"><svg class="mailx" viewBox="0 0 44 32" aria-hidden="true" focusable="false"><rect x="2" y="4" width="34" height="24" rx="4" fill="#FFFFFF" stroke="#2B2550" stroke-width="3"/><path d="M4 7l15 12L34 7" fill="none" stroke="#2B2550" stroke-width="3" stroke-linejoin="round"/><circle cx="35" cy="9" r="8" fill="#FF5C7A" stroke="#2B2550" stroke-width="2.5"/><path d="M32 6l6 6M38 6l-6 6" stroke="#2B2550" stroke-width="2.5" stroke-linecap="round"/></svg><span id="lead"><b>Microsoft 365 email is down.</b> If it stays down 24 hours, the 5 falls and 365 turns into 364.</span> <a class="credit" href="https://www.downtimecredit.com/">Work out your service credit&nbsp;&rarr;</a></p>
+  <p class="lead"><svg class="mailx" viewBox="0 0 44 32" aria-hidden="true" focusable="false"><rect x="2" y="4" width="34" height="24" rx="4" fill="#FFFFFF" stroke="#2B2550" stroke-width="3"/><path d="M4 7l15 12L34 7" fill="none" stroke="#2B2550" stroke-width="3" stroke-linejoin="round"/><circle cx="35" cy="9" r="8" fill="#FF5C7A" stroke="#2B2550" stroke-width="2.5"/><path d="M32 6l6 6M38 6l-6 6" stroke="#2B2550" stroke-width="2.5" stroke-linecap="round"/></svg><span id="lead"><b>Microsoft 365 has an open incident, says Microsoft.</b> If it stays open 24 hours, the 5 falls and 365 turns into 364.</span> <a class="credit" href="https://www.downtimecredit.com/">Work out your service credit&nbsp;&rarr;</a></p>
   <div class="sign" id="sign">
     <svg id="art" viewBox="0 0 1000 700" aria-hidden="true" focusable="false"></svg>
     <svg id="spill" viewBox="0 0 1000 700" aria-hidden="true" focusable="false"><g class="cup"><path d="M826 135h34v26a10 10 0 0 1-10 10h-14a10 10 0 0 1-10-10z" fill="#FFFFFF" stroke="#2B2550" stroke-width="3"/><path d="M860 143h6a8 8 0 0 1 0 16h-6" fill="none" stroke="#FFFFFF" stroke-width="5"/></g><g class="splash" fill="#7A4A2E"><circle cx="836" cy="150" r="6"/><circle cx="852" cy="160" r="4.5"/><circle cx="844" cy="176" r="5"/></g></svg>
@@ -1810,7 +1811,7 @@ var ART364 = (function () {
     $("stats").hidden = p === "idle";
     document.documentElement.style.setProperty("--frac", live ? V.c.frac.toFixed(4) : p === "party" || p === "retired" ? "1" : "0");
     if (live) {
-      leadSet("Microsoft 365 email is down.", "If it stays down 24 hours, the 5 falls and 365 turns into 364.");
+      leadSet("Microsoft 365 has an open incident, says Microsoft.", "If it stays open 24 hours, the 5 falls and 365 turns into 364.");
       stat(2, V.c.hms, "until the 5 falls"); stat(1, L.hangText(V.c.downMs), "down so far");
     } else if (V.state === "party") {
       leadSet("Not over yet, says Microsoft's status page.", "Its incident is still open, even if your email is back. The 5 fell at 24 hours, so 365 is 364 for now. It gets home when Microsoft closes the incident.");
