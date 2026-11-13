@@ -5,20 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy · Is it 364 yet?</title>
 <meta name="description" content="What isit364yet.com keeps, and what it plans: in plain words.">
+<link rel="preload" href="fonts/fraunces-soft-800.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+  @font-face { font-family: "Fraunces 364"; src: url("fonts/fraunces-soft-800.woff2") format("woff2"); font-weight: 400 900; font-display: swap; }
+  @font-face { font-family: "Bricolage 364"; src: url("fonts/bricolage-text.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+  @font-face { font-family: "Fraunces fb"; src: local("Georgia Bold"), local("Georgia-Bold"); font-weight: 400 900; size-adjust: 83.6%; ascent-override: 117%; descent-override: 30.5%; line-gap-override: 0%; }
+  @font-face { font-family: "Bricolage fb"; src: local("Arial"), local("ArialMT"), local("Helvetica"), local("Roboto"); font-weight: 400 700; size-adjust: 110%; ascent-override: 84.5%; descent-override: 24.5%; line-gap-override: 0%; }
   :root { --sky: #CDEBDD; --ink: #2B2550; --ink-2: #3A3460; --five: #FF5C7A; --four: #FFC233; --white: #FFFFFF;
-    --head: "Avenir Next Condensed", "Roboto Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-    --text: "Avenir Next", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
+    --head: "Fraunces 364", "Fraunces fb", Georgia, serif;
+    --text: "Bricolage 364", "Bricolage fb", system-ui, sans-serif; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--sky); color: var(--ink); font: 17px/1.55 var(--text); }
   main { max-width: 680px; margin: 0 auto; padding: 28px 16px 56px; }
-  h1 { font: 700 clamp(40px, 11vw, 64px)/1 var(--head); margin: 0 0 6px; }
-  h2 { font: 700 24px/1.2 var(--head); margin: 26px 0 4px; }
+  h1 { font: 800 clamp(40px, 11vw, 64px)/1.08 var(--head); letter-spacing: -.015em; margin: 0 0 6px; }
+  h2 { font: 800 24px/1.2 var(--head); margin: 26px 0 4px; }
   p, li { max-width: 62ch; }
-  .card { background: var(--white); border-radius: 22px; padding: 4px 20px 16px; margin-top: 18px; }
+  .card { background: var(--white); border: 3px solid var(--ink); border-radius: 26px; box-shadow: 0 7px 0 var(--ink); padding: 4px 20px 16px; margin-top: 18px; }
   a { color: var(--ink); }
   .todo { background: var(--four); border-radius: 6px; padding: 0 6px; font-weight: 700; }
-  .back { display: inline-block; margin-top: 22px; font: 700 18px/1 var(--head); }
+  .back { display: inline-block; margin-top: 26px; font: 800 18px/1.2 var(--head); }
 </style>
 </head>
 <body>
