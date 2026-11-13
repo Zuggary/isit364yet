@@ -1800,17 +1800,18 @@ var ART364 = (function () {
   // Words under the sign, the teams, the scrubber
   // =============================================================================
   var shownPose = "", shown364 = false, lastIcon = "";
-  // link: the words inside the bold part that link to Microsoft's status page (built from DOM nodes, never from data)
-  function leadSet(bold, rest, link) {
-    var el = $("lead"), key = bold + "|" + rest + "|" + (link || "");
+  // The bold part may hold one link, marked in the string as [[words]] (an explicit marker, so a word that occurs twice cannot be linked by mistake).
+  // The link goes to Microsoft's status page. Built from DOM nodes, never from data.
+  function leadSet(bold, rest) {
+    var el = $("lead"), key = bold + "|" + rest;
     if (el._k === key) { return; }
     el._k = key; el.textContent = "";
-    var b = document.createElement("b"), i = link ? bold.indexOf(link) : -1;
-    if (i < 0) { b.textContent = bold; }
+    var b = document.createElement("b"), m = /^(.*)\[\[(.+)\]\](.*)$/.exec(bold);
+    if (!m) { b.textContent = bold; }
     else {
       var a = document.createElement("a");
-      a.setAttribute("href", "https://status.cloud.microsoft/"); a.setAttribute("target", "_blank"); a.setAttribute("rel", "noopener noreferrer"); a.textContent = link;
-      b.appendChild(document.createTextNode(bold.slice(0, i))); b.appendChild(a); b.appendChild(document.createTextNode(bold.slice(i + link.length)));
+      a.setAttribute("href", "https://status.cloud.microsoft/"); a.setAttribute("target", "_blank"); a.setAttribute("rel", "noopener noreferrer"); a.textContent = m[2];
+      b.appendChild(document.createTextNode(m[1])); b.appendChild(a); b.appendChild(document.createTextNode(m[3]));
     }
     el.appendChild(b); el.appendChild(document.createTextNode(" " + rest));
   }
@@ -1851,10 +1852,10 @@ var ART364 = (function () {
     if (bn && ow && bn.parentNode && bn.parentNode.insertBefore) { bn.parentNode.insertBefore(ow, live ? bn.nextSibling : bn); }
     document.documentElement.style.setProperty("--frac", live ? V.c.frac.toFixed(4) : p === "party" || p === "retired" ? "1" : "0");
     if (live) {
-      leadSet("Microsoft 365 has an open incident, says Microsoft.", "If it stays open 24 hours, the 5 falls and 365 turns into 364.", "Microsoft");
+      leadSet("Microsoft 365 has an open incident, says [[Microsoft]].", "If it stays open 24 hours, the 5 falls and 365 turns into 364.");
       stat(2, V.c.hms, "until the 5 falls"); stat(1, L.hangText(V.c.downMs), "down so far");
     } else if (V.state === "party") {
-      leadSet("Not over yet, says Microsoft's status page.", "The 5 fell at 24 hours and gets home when Microsoft closes the incident, even if your email is back.", "Microsoft's status page");
+      leadSet("Not over yet, says [[Microsoft's status page]].", "The 5 gets home when Microsoft closes the incident, even if your email is back.");
       stat(2, "364", "for now"); stat(1, L.clockText(V.c.downMs, RM), "incident open");
     } else if (p === "party") {
       leadSet("The 5 fell.", "Email was down " + last.hours.toFixed(0) + " hours on " + L.dayLabel(last.id) + ", a full day, so 365 became 364. It works now.");
