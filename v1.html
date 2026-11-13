@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Is it 364 yet?</title>
+<meta name="description" content="A countdown to the moment a certain 365-day product has been down for one full day. Bingo while you wait. Parody.">
+<meta property="og:title" content="Is it 364 yet?">
+<meta property="og:description" content="The 5 is falling. Counting down to the day 365 officially becomes 364. Bingo while you wait.">
+<meta name="theme-color" content="#1f3fbf">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23000'/%3E%3Ctext x='32' y='44' font-family='Impact,sans-serif' font-size='30' text-anchor='middle' fill='%23ffd23f'%3E364%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --wall: #1f3fbf;        /* break-room cobalt */
+    --wall-deep: #17309a;
+    --flap: #0b0b0c;        /* departure-board black */
+    --flap-edge: #26262b;
+    --numeral: #fbf8ef;
+    --paper: #fbf8ef;
+    --ink: #10162f;
+    --yellow: #ffd23f;      /* party yellow */
+    --pink: #ff4f8b;        /* streamer pink */
+    --soft: #c9d4ff;        /* text on the wall, quiet */
+    --sign: Impact, Haettenschweiler, "Franklin Gothic Bold", "Arial Narrow Bold", sans-serif-condensed, sans-serif;
+    --body: "Avenir Next", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    --type: "Courier New", Courier, ui-monospace, monospace;
+    --h: min(44vw, 300px);  /* height of one flap digit */
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--wall);
+    color: var(--paper);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+  [hidden] { display: none !important; }
+
+  /* paper bunting, strung across the top of the wall */
+  .bunting {
+    height: 54px;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='54'%3E%3Cpath d='M0 6h168' stroke='%2310162f' stroke-width='2'/%3E%3Cpath d='M6 7h44L28 50z' fill='%23ffd23f'/%3E%3Cpath d='M62 7h44L84 50z' fill='%23ff4f8b'/%3E%3Cpath d='M118 7h44l-22 43z' fill='%23fbf8ef'/%3E%3C/svg%3E") repeat-x center top;
+  }
+
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---------- hero: the sign ---------- */
+  .hero { padding: 20px 0 8px; text-align: center; }
+  .hero h1 {
+    font: 400 clamp(44px, 12vw, 104px)/.95 var(--sign);
+    letter-spacing: .01em;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .answer {
+    font-size: clamp(18px, 4.4vw, 24px);
+    margin: 12px 0 26px;
+    color: var(--soft);
+  }
+  .answer strong { color: var(--paper); }
+
+  .board {
+    display: inline-block;
+    background: #000;
+    border-radius: 18px;
+    padding: clamp(8px, 2.4vw, 22px);
+    box-shadow: 0 0 0 4px var(--wall-deep), 0 26px 0 -8px rgba(16, 22, 47, .35);
+  }
+  .digits { display: flex; gap: clamp(6px, 1.6vw, 14px); }
+  .digit {
+    position: relative;
+    width: calc(var(--h) * .6);
+    height: var(--h);
+    perspective: 1100px;
+    font-family: var(--sign);
+    color: var(--numeral);
+  }
+  .half, .face {
+    background: var(--flap);
+    overflow: hidden;
+  }
+  .half { position: absolute; left: 0; right: 0; height: 50%; }
+  .half.top { top: 0; border-radius: 10px 10px 0 0; background: linear-gradient(#141417, var(--flap)); }
+  .half.bot { bottom: 0; border-radius: 0 0 10px 10px; background: linear-gradient(var(--flap-edge), #131316 22%); }
+  .glyph {
+    position: absolute; left: 0; right: 0;
+    height: var(--h);
+    line-height: var(--h);
+    font-size: calc(var(--h) * .84);
+    text-align: center;
+  }
+  .upper .glyph { top: 0; }
+  .lower .glyph { bottom: 0; }
+  .flap {
+    position: absolute; left: 0; right: 0; top: 0; height: 50%;
+    transform-origin: 50% 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--angle, 0deg));
+    transition: transform 1.6s cubic-bezier(.3, 1.3, .5, 1);
+    z-index: 2;
+  }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .face.front { border-radius: 10px 10px 0 0; background: linear-gradient(#3a3a42, #232329); box-shadow: 0 0 0 1px #000; }
+  .face.back { border-radius: 0 0 10px 10px; transform: rotateX(180deg); background: linear-gradient(var(--flap-edge), #131316 22%); }
+  .digit::after { /* the hinge */
+    content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px;
+    background: #000; z-index: 3;
+  }
+  .caption {
+    font: 400 clamp(17px, 4.2vw, 26px)/1.2 var(--sign);
+    letter-spacing: .04em;
+    color: var(--yellow);
+    margin: 26px 0 2px;
+    text-transform: uppercase;
+  }
+  .exact { font-variant-numeric: tabular-nums; color: var(--soft); margin: 0; }
+  .exact b { color: var(--paper); font-weight: 600; }
+
+  .count {
+    margin: 30px auto 0;
+    max-width: 640px;
+  }
+  .time {
+    font: 400 clamp(46px, 13vw, 96px)/1 var(--sign);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .02em;
+  }
+  .time small { font-size: .38em; color: var(--soft); letter-spacing: .04em; margin: 0 .5em 0 .12em; }
+  .when { color: var(--soft); margin: 8px 0 0; }
+  .when b { color: var(--paper); font-weight: 600; }
+
+  /* house rules, written straight on the wall */
+  .rules {
+    display: grid; gap: 22px 34px; grid-template-columns: 1fr;
+    text-align: left; margin: 44px 0 0; padding: 26px 0 0;
+    border-top: 3px dashed rgba(251, 248, 239, .35);
+  }
+  @media (min-width: 760px) { .rules { grid-template-columns: repeat(3, 1fr); } }
+  .rules h2 { font: 400 24px/1.05 var(--sign); text-transform: uppercase; letter-spacing: .02em; margin: 0 0 6px; color: var(--yellow); }
+  .rules p { margin: 0; color: var(--soft); }
+  .rules b { color: var(--paper); font-weight: 600; }
+  .rules a { color: var(--paper); }
+
+  /* betting slip */
+  .bets { transform: rotate(.5deg); }
+  .slips { display: grid; gap: 6px; margin: 0 0 14px; }
+  .slip {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    border: 2px solid var(--ink); background: #fff; color: var(--ink);
+    padding: 11px 12px; font: 600 16px/1.2 var(--body); cursor: pointer; text-align: left; border-radius: 0;
+  }
+  .slip span { font-weight: 400; font-size: 14px; white-space: nowrap; }
+  .slip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .slip:disabled { cursor: default; opacity: .45; }
+  .slip[aria-pressed="true"]:disabled { opacity: 1; }
+  .slip.won { background: var(--yellow); color: var(--ink); opacity: 1; }
+
+  .btn {
+    display: inline-block;
+    font: 700 17px/1 var(--body);
+    color: var(--ink);
+    background: var(--yellow);
+    border: 0;
+    border-radius: 6px;
+    padding: 14px 20px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 var(--ink);
+  }
+  .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--ink); }
+  .btn.small { font-size: 15px; padding: 11px 14px; box-shadow: 0 4px 0 var(--ink); }
+  .btn.plain { background: var(--paper); }
+  .invite { margin-top: 26px; }
+  .said { display: block; min-height: 22px; margin-top: 12px; font-size: 14px; color: var(--yellow); }
+
+  /* ---------- the wall of notices ---------- */
+  .waiting { padding: 44px 0 20px; }
+  .waiting > h2 {
+    font: 400 clamp(30px, 7vw, 52px)/1 var(--sign);
+    text-transform: uppercase;
+    margin: 0 0 6px;
+  }
+  .waiting > p { color: var(--soft); margin: 0 0 30px; max-width: 60ch; }
+  .wall {
+    display: grid;
+    gap: 34px 28px;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+  @media (min-width: 880px) {
+    .wall { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+    .bingo { grid-row: span 2; }
+  }
+  .notice {
+    position: relative;
+    min-width: 0;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 26px 20px 20px;
+    box-shadow: 0 14px 0 -6px rgba(16, 22, 47, .35);
+  }
+  .notice::before { /* tape */
+    content: ""; position: absolute; top: -13px; left: 50%;
+    width: 96px; height: 26px; margin-left: -48px;
+    background: rgba(255, 210, 63, .82);
+    transform: rotate(-2deg);
+  }
+  .notice h3 {
+    font: 400 28px/1 var(--sign);
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    margin: 0 0 6px;
+  }
+  .notice p { margin: 0 0 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+  /* bingo */
+  .bingo { transform: rotate(-.6deg); max-width: 600px; width: 100%; justify-self: center; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 5px;
+    margin: 0 0 14px;
+  }
+  .cell {
+    aspect-ratio: 1;
+    min-width: 0;
+    border: 2px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    padding: 3px;
+    font: 600 clamp(10px, 2.6vw, 13.5px)/1.15 var(--body);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    border-radius: 0;
+  }
+  .cell[aria-pressed="true"] {
+    background: var(--pink);
+    color: #fff;
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+  }
+  .cell.win { background: var(--yellow); color: var(--ink); text-decoration: none; }
+  .tally { font-weight: 700; }
+
+  /* root cause machine */
+  .cause { transform: rotate(.7deg); }
+  .reels { display: grid; gap: 5px; margin: 0 0 14px; }
+  .reel {
+    background: var(--flap);
+    color: var(--numeral);
+    font: 400 clamp(20px, 5.4vw, 26px)/1.1 var(--sign);
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    padding: 12px 12px 10px;
+    border-radius: 6px;
+    min-height: 50px;
+    background-image: linear-gradient(transparent 49%, #000 49% 52%, transparent 52%);
+  }
+  .reel.spin { animation: clack .12s linear infinite; }
+  @keyframes clack { 50% { transform: scaleY(.55); filter: brightness(1.6); } }
+
+  /* the receipt */
+  .receipt {
+    transform: rotate(-.4deg);
+    font-family: var(--type);
+    font-size: 15px;
+    max-width: 420px;
+    justify-self: center;
+    width: 100%;
+    padding-bottom: 28px;
+    -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 100% repeat-x;
+            mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 100% repeat-x;
+  }
+  .receipt::before { display: none; }
+  .receipt h3 { text-align: center; }
+  .receipt label { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 0 0 8px; }
+  .receipt input {
+    width: 84px; font: 700 16px var(--type); color: var(--ink);
+    padding: 6px 8px; border: 2px solid var(--ink); border-radius: 0; background: #fff; text-align: right;
+  }
+  .lines { border-top: 2px dashed var(--ink); margin: 14px 0 0; padding: 12px 0 0; }
+  .line { display: flex; justify-content: space-between; gap: 12px; margin: 0 0 6px; }
+  .line b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .total { border-top: 2px dashed var(--ink); margin-top: 10px; padding-top: 10px; font-weight: 700; }
+
+  /* the memo */
+  .memo { transform: rotate(.4deg); }
+  .memo blockquote {
+    margin: 0 0 14px;
+    padding: 0 0 0 14px;
+    border-left: 5px solid var(--pink);
+    font: 400 18px/1.45 var(--type);
+    min-height: 5.8em;
+  }
+
+  footer { padding: 30px 0 60px; color: var(--soft); font-size: 14px; max-width: 72ch; }
+  footer p { margin: 0 0 10px; }
+  footer strong { color: var(--paper); }
+
+  #confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flap { transition: none; }
+    .reel.spin { animation: none; }
+    .bingo, .cause, .receipt, .memo { transform: none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="bunting" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="hero">
+    <h1>Is it 364 yet?</h1>
+    <p class="answer" id="answer"><strong>Not yet.</strong> The 5 is falling. The cake is ordered.</p>
+
+    <div class="board" role="img" id="board" aria-label="365, with the 5 falling toward 4">
+      <div class="digits">
+        <div class="digit"><div class="half top upper"><span class="glyph">3</span></div><div class="half bot lower"><span class="glyph">3</span></div></div>
+        <div class="digit"><div class="half top upper"><span class="glyph">6</span></div><div class="half bot lower"><span class="glyph">6</span></div></div>
+        <div class="digit" id="last">
+          <div class="half top upper"><span class="glyph">4</span></div>
+          <div class="half bot lower"><span class="glyph">5</span></div>
+          <div class="flap" id="flap">
+            <div class="face front upper"><span class="glyph">5</span></div>
+            <div class="face back lower"><span class="glyph">4</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption">Days of service this year, best case</p>
+    <p class="exact">To be exact: <b id="score">365.0000</b>. The flap is <b id="pct">0.0%</b> of the way over.</p>
+
+    <div class="count" id="countdown">
+      <div class="time" role="timer" aria-label="Time until 364 is official">
+        <span id="hh">--</span><small>h</small><span id="mm">--</span><small>m</small><span id="ss">--</span><small>s</small>
+      </div>
+      <p class="when">until it's official, at <b id="target">8:17 AM Pacific on Friday</b>. Unless somebody fixes it first.</p>
+    </div>
+    <p class="when" id="verdict" hidden></p>
+
+    <div class="invite">
+      <button class="btn" id="share" type="button">Copy the invitation</button>
+      <span class="said" id="said" role="status"></span>
+    </div>
+
+    <div class="rules">
+      <div>
+        <h2>When the clock started</h2>
+        <p><b>8:17 AM Pacific, Thursday.</b> That is the start time Microsoft gave for incident EX1550543, as reported. A full day later is <b>8:17 AM Friday</b>.</p>
+      </div>
+      <div>
+        <h2>What counts as back up</h2>
+        <p><b>Microsoft says so.</b> The clock stops when Microsoft's <a href="https://status.cloud.microsoft/" rel="noopener">public status page</a> stops showing a problem for Microsoft 365. "Works for me" does not count. The first all-clear ends it.</p>
+      </div>
+      <div>
+        <h2>Who is keeping score</h2>
+        <p>A script reads that status page every 10 minutes. <b id="checked">It has not reported in yet.</b> <span id="mssays"></span></p>
+      </div>
+    </div>
+  </header>
+
+  <section class="waiting" aria-labelledby="waiting-h">
+    <h2 id="waiting-h">While you wait</h2>
+    <p>Email is down, so you have time. Everything here stays in your browser.</p>
+
+    <div class="wall">
+      <div class="notice bingo">
+        <h3>Outage bingo</h3>
+        <p>Tap what you've seen today. Five in a row wins nothing.</p>
+        <div class="grid" id="grid"></div>
+        <div class="row">
+          <span class="tally" id="tally">0 of 25</span>
+          <button class="btn small" id="bingo-copy" type="button">Copy my card</button>
+          <button class="btn small plain" id="bingo-new" type="button">Deal a new card</button>
+        </div>
+      </div>
+
+      <div class="notice bets">
+        <h3>Call it</h3>
+        <p>When does Microsoft give the all-clear? One pick. Bets are final, like a change freeze. Stakes: one slice of cake. Times are Pacific.</p>
+        <div class="slips" id="slips"></div>
+        <div class="row">
+          <span class="tally" id="bet-note">No bet placed.</span>
+          <button class="btn small" id="bet-copy" type="button" hidden>Copy my bet</button>
+        </div>
+      </div>
+
+      <div class="notice cause">
+        <h3>Root cause machine</h3>
+        <p>The official report takes weeks. This takes a second.</p>
+        <div class="reels" aria-live="polite">
+          <div class="reel" id="r1">Somebody</div>
+          <div class="reel" id="r2">did something to</div>
+          <div class="reel" id="r3">something</div>
+        </div>
+        <div class="row">
+          <button class="btn small" id="spin" type="button">Find the root cause</button>
+          <button class="btn small plain" id="cause-copy" type="button">Copy it</button>
+        </div>
+      </div>
+
+      <div class="notice memo">
+        <h3>Vague update generator</h3>
+        <p>From the Office of Saying Something Every 60 Minutes.</p>
+        <blockquote id="memo" aria-live="polite">We're investigating reports of reports. Next update in 60 minutes.</blockquote>
+        <div class="row">
+          <button class="btn small" id="memo-new" type="button">Write the next update</button>
+          <button class="btn small plain" id="memo-copy" type="button">Copy it</button>
+        </div>
+      </div>
+
+      <div class="notice receipt">
+        <h3>Your outage dividend</h3>
+        <label>Emails you get a day <input id="in-mail" type="number" inputmode="numeric" min="0" max="5000" value="120"></label>
+        <label>Meetings you get a day <input id="in-meet" type="number" inputmode="numeric" min="0" max="50" value="5"></label>
+        <div class="lines">
+          <div class="line"><span>Emails not received</span><b id="d-mail">0</b></div>
+          <div class="line"><span>Reply-alls dodged</span><b id="d-reply">0</b></div>
+          <div class="line"><span>Meeting invites lost</span><b id="d-meet">0</b></div>
+          <div class="line"><span>"Per my last email"</span><b>0</b></div>
+          <div class="line total"><span>Due when service returns</span><b>all of it</b></div>
+          <div class="line"><span>Payable</span><b>at once</b></div>
+        </div>
+      </div>
+    </div>
+    <span class="said" id="said2" role="status"></span>
+  </section>
+
+  <footer>
+    <p><strong>This is a parody.</strong> It is not affiliated with, endorsed by or connected to Microsoft. Microsoft 365 and Outlook are trademarks of Microsoft Corporation.</p>
+    <p>The clock counts from 8:17 AM Pacific on November 12, 2026, the start time reported for Microsoft incident EX1550543. The score is read from Microsoft's public status page every 10 minutes, so the stop time can be up to 20 minutes late. Your own mailbox may come back sooner or later than the page says.</p>
+    <p>No cookies, no tracking, no sign-in, no real money. Your bingo card and your bet stay in your browser. Real people are working a long night to fix this. The first slice of cake is theirs.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- The only two things to edit ----------------------------------------
+  // Start of the outage. 8:17 AM PST on 2026-11-12 is 16:17 UTC (Microsoft's stated start for EX1550543).
+  var OUTAGE_START = Date.UTC(2026, 10, 12, 16, 17, 0);
+  // Set this when the outage is declared resolved, e.g. Date.UTC(2026, 10, 13, 6, 30, 0).
+  // Leave null while it is still down. status.json, written by the checker, overrides both.
+  var OUTAGE_END = null;
+  // --------------------------------------------------------------------------
+
+  var DAY = 24 * 60 * 60 * 1000;
+  var TARGET = OUTAGE_START + DAY;
+
+  var q = new URLSearchParams(location.search).get("test");
+  var offset = 0;
+  if (q === "party") { offset = TARGET + 5000 - Date.now(); }
+  if (q === "soon")  { offset = TARGET - 8000 - Date.now(); }
+  if (q === "off")   { OUTAGE_END = OUTAGE_START + 13.4 * 60 * 60 * 1000; offset = OUTAGE_END + 60000 - Date.now(); }
+  function now() { return Date.now() + offset; }
+
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  var HERE = location.origin + location.pathname;
+
+  function say(id, msg) {
+    var el = $(id);
+    el.textContent = msg;
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.textContent = ""; }, 3500);
+  }
+  function copy(text, id) {
+    var ok = function () { say(id, "Copied. Paste it somewhere that still works."); };
+    var no = function () { say(id, "Your browser blocked the copy. Select the text and copy it by hand."); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(ok, no); }
+    else { no(); }
+  }
+
+  function clock(ms) {
+    try {
+      return new Intl.DateTimeFormat(undefined, { weekday: "long", hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(new Date(ms));
+    } catch (e) { return new Date(ms).toString(); }
+  }
+  $("target").textContent = clock(TARGET);
+
+  // ---- the scorekeeper: status.json is written by a checker every 10 minutes ----
+  var lastCheck = 0, msStatus = "";
+  function ago(ms) {
+    var m = Math.round((Date.now() - ms) / 60000);
+    return m < 1 ? "under a minute ago" : m === 1 ? "1 minute ago" : m < 90 ? m + " minutes ago" : Math.round(m / 60) + " hours ago";
+  }
+  function showCheck() {
+    if (!lastCheck) { return; }
+    $("checked").textContent = "Last check: " + ago(lastCheck) + ".";
+    $("mssays").textContent = msStatus ? "Microsoft's page said: " + msStatus + "." : "";
+  }
+  function applyStatus(j) {
+    if (!j || typeof j !== "object") { return; }
+    var a = Date.parse(j.start), b = Date.parse(j.end), c = Date.parse(j.checked);
+    if (isFinite(a)) { OUTAGE_START = a; TARGET = a + DAY; $("target").textContent = clock(TARGET); }
+    if (isFinite(b)) { OUTAGE_END = b; }
+    if (isFinite(c)) { lastCheck = c; }
+    msStatus = typeof j.status === "string" ? j.status.slice(0, 60) : "";
+    showCheck();
+  }
+  function poll() {
+    if (q || !window.fetch) { return; }
+    fetch("status.json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(applyStatus)
+      .catch(function () {});
+  }
+
+  // ---- the board -----------------------------------------------------------
+  var state = "";
+  var downDays = 0;
+  function setState(s) {
+    if (s === state) { return; }
+    state = s;
+    if (s === "party") {
+      $("answer").innerHTML = "<strong>Yes.</strong> Welcome to 364. Cut the cake.";
+      $("countdown").hidden = true;
+      $("verdict").hidden = false;
+      $("verdict").innerHTML = "One full day down. <b>The 5 has left the building.</b>";
+      $("board").setAttribute("aria-label", "364");
+      confetti(0);
+    } else if (s === "off") {
+      $("answer").innerHTML = "<strong>No.</strong> They fixed it. We respect the hustle.";
+      $("countdown").hidden = true;
+      $("verdict").hidden = false;
+      $("board").setAttribute("aria-label", "365. The 5 held on.");
+    }
+  }
+
+  function tick() {
+    var t = now();
+    var ended = OUTAGE_END !== null && t >= OUTAGE_END && OUTAGE_END < TARGET;
+    var downMs = Math.max(0, (ended ? OUTAGE_END : Math.min(t, TARGET)) - OUTAGE_START);
+    var frac = Math.min(1, downMs / DAY);
+    downDays = frac;
+    bets(t, ended);
+
+    $("score").textContent = (365 - frac).toFixed(4);
+    $("pct").textContent = (frac * 100).toFixed(1) + "%";
+    dividend();
+
+    if (ended) {
+      setState("off");
+      $("flap").style.setProperty("--angle", "0deg");
+      $("verdict").innerHTML = "Final score: <b>" + (365 - frac).toFixed(2) + "</b>. Down for about <b>" +
+        (downMs / 3600000).toFixed(1) + " hours</b>. So close. Freeze the cake.";
+      return;
+    }
+    $("flap").style.setProperty("--angle", (-180 * frac).toFixed(2) + "deg");
+    if (t >= TARGET) { setState("party"); return; }
+
+    setState("live");
+    var s = Math.floor((TARGET - t) / 1000);
+    $("hh").textContent = pad(Math.floor(s / 3600));
+    $("mm").textContent = pad(Math.floor((s % 3600) / 60));
+    $("ss").textContent = pad(s % 60);
+  }
+
+  $("share").addEventListener("click", function () {
+    var line = state === "party" ? "It's official: 365 is now 364. The party is on. "
+      : state === "off" ? "They fixed it before the full day. 365 survives. "
+      : "The 5 is falling. Counting down to the moment 365 officially becomes 364. Bring cake. ";
+    copy(line + HERE, "said");
+  });
+
+  // ---- bets -----------------------------------------------------------------
+  // Bucket ends in UTC. Pacific Standard Time is UTC minus 8.
+  var BUCKETS = [
+    { name: "Before midnight", note: "optimist", end: Date.UTC(2026, 10, 13, 8, 0, 0) },
+    { name: "Midnight to 3 AM", note: "night shift", end: Date.UTC(2026, 10, 13, 11, 0, 0) },
+    { name: "3 AM to 6 AM", note: "before coffee", end: Date.UTC(2026, 10, 13, 14, 0, 0) },
+    { name: "6 AM to 8:17 AM", note: "photo finish", end: 0 },
+    { name: "It makes 364", note: "long shot", end: Infinity }
+  ];
+  var bet = load("bet364");
+  if (!bet || typeof bet.i !== "number" || !BUCKETS[bet.i]) { bet = null; }
+  var betKey = "";
+  (function () {
+    var box = $("slips");
+    BUCKETS.forEach(function (b, i) {
+      var el = document.createElement("button");
+      el.type = "button"; el.className = "slip"; el.dataset.i = i;
+      el.innerHTML = b.name + " <span>" + b.note + "</span>";
+      box.appendChild(el);
+    });
+    box.addEventListener("click", function (e) {
+      var el = e.target.closest ? e.target.closest(".slip") : null;
+      if (!el || el.disabled || bet) { return; }
+      bet = { i: +el.dataset.i, at: Date.now() };
+      store("bet364", bet);
+      betKey = "";
+    });
+  })();
+  function bets(t, ended) {
+    BUCKETS[3].end = TARGET;
+    var winner = -1, i;
+    if (ended) { for (i = 0; i < 5; i++) { if (OUTAGE_END < BUCKETS[i].end) { winner = i; break; } } }
+    else if (t >= TARGET) { winner = 4; }
+    var key = [winner, bet ? bet.i : -1, BUCKETS.map(function (b) { return t >= b.end ? 1 : 0; }).join("")].join("|");
+    if (key === betKey) { return; }
+    betKey = key;
+    var els = $("slips").children;
+    for (i = 0; i < 5; i++) {
+      var gone = t >= BUCKETS[i].end;
+      els[i].disabled = !!bet || winner >= 0 || gone;
+      els[i].setAttribute("aria-pressed", bet && bet.i === i ? "true" : "false");
+      els[i].classList.toggle("won", winner === i);
+    }
+    var note = "No bet placed.";
+    if (winner >= 0) {
+      note = !bet ? "Betting is closed. The answer: " + BUCKETS[winner].name + "."
+        : bet.i === winner ? "You called it. One slice of cake is yours."
+        : "You said " + BUCKETS[bet.i].name + ". You owe the on-call a slice.";
+    } else if (bet) { note = "Your bet: " + BUCKETS[bet.i].name + ". No changes."; }
+    $("bet-note").textContent = note;
+    $("bet-copy").hidden = !bet;
+  }
+  $("bet-copy").addEventListener("click", function () {
+    copy("My bet on the all-clear: " + BUCKETS[bet.i].name + ". Stakes: one slice of cake. " + HERE, "said2");
+  });
+
+  // ---- bingo ---------------------------------------------------------------
+  var SQUARES = [
+    "Status page all green", "“Elevated load”", "Boss wants an ETA", "“Switch to Google?”",
+    "“Back to on-prem?”", "“Tried restarting?”", "Ticket by phone call", "Fax machine",
+    "“Subset of users”", "Chat is down too", "Refreshed status again", "“Is it just me?”",
+    "CEO forwards the news", "“Investigating”", "Rollback made it worse", "Printed emails",
+    "Blame the last patch", "Outage meeting, no invite", "Reddit knew first", "“Next update in 60”",
+    "SLA calculator open", "“Can you just fix it?”", "Personal Gmail for work", "Back, then gone again",
+    "Old mail admin looks smug", "Change freeze", "Long lunch", "Random password reset",
+    "“Mitigation in progress”", "“Config change”", "Hold music", "Email asking if email is down"
+  ];
+  var FREE = "It was DNS";
+  var LINES = (function () {
+    var out = [], i, j, row, col;
+    for (i = 0; i < 5; i++) {
+      row = []; col = [];
+      for (j = 0; j < 5; j++) { row.push(i * 5 + j); col.push(j * 5 + i); }
+      out.push(row, col);
+    }
+    out.push([0, 6, 12, 18, 24], [4, 8, 12, 16, 20]);
+    return out;
+  })();
+  var card = load("bingo364");
+  var hadBingo = false;
+
+  function deal() {
+    var pool = SQUARES.slice(), picks = [], i;
+    while (picks.length < 24) { picks.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]); }
+    picks.splice(12, 0, FREE);
+    var on = [];
+    for (i = 0; i < 25; i++) { on.push(i === 12); }
+    card = { squares: picks, on: on };
+    hadBingo = false;
+    store("bingo364", card);
+  }
+  function valid(c) { return c && c.squares && c.squares.length === 25 && c.on && c.on.length === 25; }
+
+  function drawBingo() {
+    var grid = $("grid"), i;
+    grid.textContent = "";
+    for (i = 0; i < 25; i++) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "cell";
+      b.textContent = card.squares[i];
+      b.setAttribute("aria-pressed", card.on[i] ? "true" : "false");
+      b.dataset.i = i;
+      grid.appendChild(b);
+    }
+    scoreBingo(false);
+  }
+  function scoreBingo(celebrate) {
+    var cells = $("grid").children, wins = {}, n = 0, any = false, i, k;
+    for (i = 0; i < LINES.length; i++) {
+      var full = true;
+      for (k = 0; k < 5; k++) { if (!card.on[LINES[i][k]]) { full = false; } }
+      if (full) { any = true; for (k = 0; k < 5; k++) { wins[LINES[i][k]] = 1; } }
+    }
+    for (i = 0; i < 25; i++) {
+      if (card.on[i]) { n++; }
+      cells[i].classList.toggle("win", !!wins[i]);
+    }
+    $("tally").textContent = any ? "Bingo. " + n + " of 25" : n + " of 25";
+    if (any && !hadBingo && celebrate) { confetti(2600); }
+    hadBingo = any;
+  }
+  $("grid").addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest(".cell") : null;
+    if (!b) { return; }
+    var i = +b.dataset.i;
+    card.on[i] = !card.on[i];
+    b.setAttribute("aria-pressed", card.on[i] ? "true" : "false");
+    store("bingo364", card);
+    scoreBingo(true);
+  });
+  $("bingo-new").addEventListener("click", function () { deal(); drawBingo(); });
+  $("bingo-copy").addEventListener("click", function () {
+    var n = 0, rows = [], i, j, r;
+    for (i = 0; i < 5; i++) {
+      r = "";
+      for (j = 0; j < 5; j++) { if (card.on[i * 5 + j]) { n++; r += "🟨"; } else { r += "⬛"; } }
+      rows.push(r);
+    }
+    copy("Outage bingo, " + n + " of 25" + (hadBingo ? ", BINGO" : "") + "\n" + rows.join("\n") + "\n" + HERE, "said2");
+  });
+  if (!valid(card)) { deal(); }
+  drawBingo();
+
+  // ---- root cause machine --------------------------------------------------
+  var WHO = ["DNS", "An expired certificate", "A config change", "The intern", "One YAML space", "A Friday deploy",
+             "The backup of the backup", "BGP", "A cron job from 2014", "A full disk", "Daylight saving time", "The fix"];
+  var DID = ["quietly took down", "politely declined", "fell on", "lost an argument with", "rolled back",
+             "forgot about", "rate-limited", "was promoted over"];
+  var WHAT = ["the load balancer", "authentication", "everyone's inbox", "the status page", "the rollback plan",
+              "the other region", "itself", "the thing that fixes this"];
+  var spinning = false;
+  $("spin").addEventListener("click", function () {
+    if (spinning) { return; }
+    spinning = true;
+    var dns = Math.random() < 0.2;
+    var end = dns ? ["It", "was", "DNS"] : [pick(WHO), pick(DID), pick(WHAT)];
+    var reels = [$("r1"), $("r2"), $("r3")], sets = [WHO, DID, WHAT];
+    var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    reels.forEach(function (el, i) {
+      if (still) { el.textContent = end[i]; return; }
+      el.classList.add("spin");
+      var roll = setInterval(function () { el.textContent = pick(sets[i]); }, 70);
+      setTimeout(function () {
+        clearInterval(roll);
+        el.classList.remove("spin");
+        el.textContent = end[i];
+        if (i === 2) { spinning = false; }
+      }, 600 + i * 450);
+    });
+    if (still) { spinning = false; }
+  });
+  $("cause-copy").addEventListener("click", function () {
+    copy("Root cause: " + $("r1").textContent + " " + $("r2").textContent + " " + $("r3").textContent + ". " + HERE, "said2");
+  });
+
+  // ---- vague update generator ---------------------------------------------
+  var M1 = ["We're investigating", "We're continuing to analyse", "We've identified", "We're reviewing telemetry on", "We're monitoring"];
+  var M2 = ["a portion of infrastructure", "a subset of a subset of users", "elevated feelings of load",
+            "an issue impacting issues", "reports of reports", "a potential cause of the potential cause"];
+  var M3 = ["and are rebalancing traffic to servers that are also thinking about it",
+            "and have restored the part that was already working",
+            "and are applying a fix to the fix",
+            "and will restart the thing we restarted",
+            "and remain optimistic in a way that is not legally binding"];
+  var M4 = ["Next update in 60 minutes, or when there is news, whichever is later.",
+            "Thank you for your patience, which we have measured and found elevated.",
+            "More details are in the admin center, once it loads.",
+            "This update will be sent by email."];
+  $("memo-new").addEventListener("click", function () {
+    $("memo").textContent = pick(M1) + " " + pick(M2) + " " + pick(M3) + ". " + pick(M4);
+  });
+  $("memo-copy").addEventListener("click", function () { copy($("memo").textContent + " " + HERE, "said2"); });
+
+  // ---- outage dividend -----------------------------------------------------
+  function num(id, max) {
+    var v = parseFloat($(id).value);
+    if (!isFinite(v) || v < 0) { return 0; }
+    return Math.min(v, max);
+  }
+  function dividend() {
+    var mail = num("in-mail", 5000) * downDays;
+    $("d-mail").textContent = Math.floor(mail).toLocaleString();
+    $("d-reply").textContent = Math.floor(mail * 0.04).toLocaleString();
+    $("d-meet").textContent = Math.floor(num("in-meet", 50) * downDays).toLocaleString();
+  }
+  $("in-mail").addEventListener("input", dividend);
+  $("in-meet").addEventListener("input", dividend);
+
+  // ---- confetti: 0 = keep going, otherwise a burst of that many ms ----------
+  var raf = 0;
+  function confetti(ms) {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
+    var c = $("confetti"), ctx = c.getContext("2d");
+    var colors = ["#ffd23f", "#ff4f8b", "#fbf8ef", "#10162f"];
+    var r = Math.min(window.devicePixelRatio || 1, 2);
+    var W = window.innerWidth, H = window.innerHeight, bits = [], i;
+    c.width = W * r; c.height = H * r;
+    ctx.setTransform(r, 0, 0, r, 0, 0);
+    var n = Math.min(170, Math.floor(W / 6) + 50);
+    for (i = 0; i < n; i++) {
+      bits.push({ x: Math.random() * W, y: Math.random() * -H, w: 6 + Math.random() * 6, h: 9 + Math.random() * 10,
+                  vy: 2 + Math.random() * 3, vx: -1 + Math.random() * 2, a: Math.random() * 6.28,
+                  va: -0.14 + Math.random() * 0.28, col: colors[i % colors.length] });
+    }
+    var until = ms ? performance.now() + ms : 0;
+    cancelAnimationFrame(raf);
+    (function frame(ts) {
+      var stopping = until && ts > until, alive = false;
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < bits.length; i++) {
+        var b = bits[i];
+        b.x += b.vx; b.y += b.vy; b.a += b.va;
+        if (b.y > H + 20) { if (stopping) { continue; } b.y = -20; b.x = Math.random() * W; }
+        alive = true;
+        ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.a);
+        ctx.fillStyle = b.col;
+        ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h * Math.abs(Math.cos(b.a)));
+        ctx.restore();
+      }
+      if (alive) { raf = requestAnimationFrame(frame); } else { ctx.clearRect(0, 0, W, H); }
+    })(performance.now());
+  }
+
+  // First paint with the flap upright, then let it fall to where it is now.
+  setTimeout(function () { tick(); setInterval(tick, 250); }, 80);
+  // The fall-into-place animation is for the first paint only. After that the flap must
+  // always sit at its true angle, even in a browser that pauses animations.
+  setTimeout(function () { $("flap").style.transition = "none"; }, 2400);
+  poll();
+  setInterval(poll, 60000);
+  setInterval(showCheck, 30000);
+})();
+</script>
+</body>
+</html>
