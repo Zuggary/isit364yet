@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /v1.html
+Disallow: /v2.html
+Disallow: /v3.html
+
+Sitemap: https://www.isit364yet.com/sitemap.xml
