@@ -1,0 +1,2258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Is it 364 yet?</title>
+<meta name="description" content="The 5 in 365 is hanging on by its fingertips. If email stays down a full day, it falls and 365 becomes 364. Check on the 5. Parody.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.isit364yet.com/">
+<meta property="og:title" content="Is it 364 yet?">
+<meta property="og:description" content="The 5 is hanging on. One full day down and 365 becomes 364. Come check on it.">
+<meta property="og:image" content="https://www.isit364yet.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#CDEBDD">
+<link rel="icon" id="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23CDEBDD'/%3E%3Cpath d='M43 13H24l-2 18c9-5 24-2 24 11 0 14-19 16-28 7' fill='none' stroke='%23FF5C7A' stroke-width='11' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  /* ---------- colours and type: change them here (the drawing uses the same values in ART364.C) ---------- */
+  :root {
+    --sky: #CDEBDD;        /* background; the script moves it with the real sky over the Pacific coast */
+    --ink: #2B2550;        /* sign, text */
+    --ink-2: #3A3460;      /* quiet text */
+    --five: #FF5C7A;       /* the 5 */
+    --four: #FFC233;       /* the 4, and the party */
+    --white: #FFFFFF;
+    --mist: #EEF3FA;       /* inside the game */
+    --head: "Avenir Next Condensed", "Roboto Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    --text: "Avenir Next", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    --wide: 1040px;
+    --post-x: 11.2%;       /* the sign's posts, as a share of the column: left edge and width */
+    --post-w: 2.6%;
+    --drop-x: 74%;         /* the line the 5 would fall along */
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--sky); color: var(--ink); font: 17px/1.5 var(--text); overflow-x: hidden; transition: background-color .8s linear; }
+  button, input { font: inherit; color: inherit; }
+  button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; box-shadow: 0 0 0 6px var(--white); }
+  [hidden] { display: none !important; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .wrap { max-width: var(--wide); margin: 0 auto; padding: 0 16px; position: relative; z-index: 1; }
+  /* The posts of the sign run down the page behind everything, to the ground. */
+  .posts {
+    background:
+      linear-gradient(var(--ink), var(--ink)) calc(100% * .112) 0 / var(--post-w) 100% no-repeat,
+      linear-gradient(var(--ink), var(--ink)) calc(100% * .884) 0 / var(--post-w) 100% no-repeat;
+  }
+  .between { padding-left: 16.5%; padding-right: 14%; }
+
+  /* ---------- hero: the answer, the sign, the 5 ---------- */
+  .hero { padding-top: 14px; }
+  h1 { margin: 0; }
+  .q { display: block; font: 700 20px/1.2 var(--head); letter-spacing: .01em; }
+  #answer { display: block; font: 700 clamp(60px, 18.5vw, 150px)/.92 var(--head); letter-spacing: -.01em; margin-top: 2px; }
+  #answer.long { font-size: clamp(36px, 10.4vw, 96px); line-height: 1; }
+  .sign { position: relative; margin-top: 4px; }
+  .sign svg { display: block; width: 100%; height: auto; overflow: hidden; }
+  #poke { position: absolute; left: 58%; width: 32%; top: 0; margin-top: 31%; height: 0; padding: 0 0 36%; background: none; border: 0; border-radius: 24px; touch-action: none; cursor: grab; }
+  #poke:active { cursor: grabbing; }
+  .sign.up #poke { margin-top: 0; padding-bottom: 30%; cursor: pointer; touch-action: manipulation; }
+  #bubble {
+    position: absolute; left: 57%; top: 0; margin: 4% 0 0; max-width: 41%; padding: 8px 12px; pointer-events: none;
+    background: var(--white); border-radius: 16px; font: 600 14px/1.25 var(--text); z-index: 2;
+    transform-origin: 40% 100%; transition: opacity .16s, transform .28s cubic-bezier(.2, 1.7, .4, 1);
+  }
+  @starting-style { #bubble { opacity: 0; transform: scale(.5) translateY(10px); } }
+  #bubble::after { content: ""; position: absolute; left: 34%; bottom: -12px; border: 7px solid transparent; border-top-color: var(--white); border-bottom-width: 6px; }
+  .sign.up #bubble { left: 62%; max-width: 31%; margin-top: 35.5%; transform-origin: 40% 0; }
+  .sign.up #bubble::after { bottom: auto; top: -12px; border-top-color: transparent; border-bottom-color: var(--white); border-top-width: 6px; border-bottom-width: 7px; }
+  @media (min-width: 600px) { #bubble { font-size: 17px; padding: 12px 16px; border-radius: 20px; } }
+  .say { padding-top: 10px; padding-bottom: 14px; }
+  .lead { margin: 0 0 10px; font-size: 18px; line-height: 1.35; }
+  .lead b { font-weight: 700; }
+  .stats { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0 0 6px; }
+  .stats b { display: block; font: 700 clamp(28px, 7.6vw, 46px)/1 var(--head); font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+  .stats span { display: block; font-size: 13px; line-height: 1.3; }
+  .nums { margin: 0 0 10px; font-size: 14px; color: var(--ink-2); }
+  .nums:empty { display: none; }
+  .teams { display: flex; flex-wrap: wrap; gap: 10px 8px; margin: 0 0 10px; }
+  .team {
+    min-height: 52px; padding: 0 16px; border: 0; border-radius: 26px; font: 700 19px/1 var(--head); letter-spacing: .01em;
+    color: var(--ink); box-shadow: 0 4px 0 var(--ink); user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  .team:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+  .team.hold { background: var(--five); }
+  .team.letgo { background: var(--four); }
+  .team[aria-pressed="true"] { outline: 4px solid var(--ink); outline-offset: 2px; }
+  .note { margin: 0 0 6px; font-size: 15px; }
+  .plaque { display: inline-block; margin: 0 0 12px; padding: 10px 14px; background: var(--four); border-radius: 10px; font: 700 15px/1.2 var(--head); letter-spacing: .06em; text-transform: uppercase; }
+  .plaque b { display: block; font-size: 46px; line-height: 1; letter-spacing: 0; margin-top: 2px; }
+  /* Wide screens: the words sit under the ledge, beside the 5. The box is 41% wide and about 35% of the width tall. */
+  @media (min-width: 1040px) {
+    .say { position: absolute; left: 0; top: 0; margin-top: 34.6%; width: 58%; padding-top: 0; padding-right: 0; padding-bottom: 0; background: none; }
+    .lead { font-size: 19px; margin-bottom: 8px; }
+    .team { font-size: 21px; padding: 0 24px; }
+    .say .ends { display: none; }
+    .say .nums { margin-bottom: 8px; }
+    .say .scrub { margin-top: 4px; }
+    .stats { gap: 6px 22px; }
+    .say .note { margin-bottom: 4px; }
+    .say .scrub input { height: 38px; }
+  }
+  .below { padding-top: 16px; padding-bottom: 26px; }
+  .hours { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+  .chip { min-height: 40px; padding: 4px 12px; border: 2px solid var(--ink); border-radius: 20px; background: var(--sky); font: 600 14px/1.15 var(--text); }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--white); }
+  .chip:disabled { opacity: .45; cursor: default; }
+  .chip[aria-pressed="true"]:disabled { opacity: 1; }
+  .scrub { margin-top: 10px; }
+  .scrub label { display: block; font-size: 15px; font-weight: 600; }
+  .scrub output { display: block; font-weight: 400; font-size: 14.5px; min-height: 22px; }
+  .scrub input {
+    -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 44px; margin: 0; background: transparent; cursor: ew-resize; --now: 50%;
+  }
+  .scrub input::-webkit-slider-runnable-track { height: 14px; border-radius: 7px; background: linear-gradient(to right, var(--five) 0, var(--five) var(--now), rgba(43, 37, 80, .22) var(--now)); }
+  .scrub input::-moz-range-track { height: 14px; border-radius: 7px; background: linear-gradient(to right, var(--five) 0, var(--five) var(--now), rgba(43, 37, 80, .22) var(--now)); }
+  .scrub input::-webkit-slider-thumb { -webkit-appearance: none; width: 34px; height: 34px; margin-top: -10px; border-radius: 50%; background: var(--white); border: 5px solid var(--ink); }
+  .scrub input::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: var(--white); border: 5px solid var(--ink); }
+  .ends { display: flex; justify-content: space-between; font-size: 13px; margin: -4px 0 4px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* small loops that do not need the script */
+  .blink { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
+  @keyframes blink { 0%, 95%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+  .sweat { animation: sweat 2.4s ease-in infinite; }
+  .sweat.late { animation-delay: -1.2s; }
+  @keyframes sweat { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(46px); opacity: 0; } }
+  .steam { animation: steam 3s ease-in-out infinite; }
+  @keyframes steam { 0%, 100% { opacity: .35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-5px); } }
+  .stars circle:nth-child(3n) { animation: twinkle 4s ease-in-out infinite; }
+  .stars circle:nth-child(4n) { animation: twinkle 6s ease-in-out -2s infinite; }
+  @keyframes twinkle { 50% { opacity: .25; } }
+  .lit { animation: latework 11s steps(1) infinite; }
+  @keyframes latework { 92% { opacity: .1; } 94% { opacity: 1; } }
+
+  /* ---------- the way down: the toys are stations on the posts ---------- */
+  h2 { font: 700 clamp(34px, 7.4vw, 58px)/1 var(--head); margin: 0 0 6px; letter-spacing: -.005em; }
+  .shaft { position: relative; padding-top: 30px; }
+  .shaft::before { /* the line the 5 would fall along */
+    content: ""; position: absolute; left: var(--drop-x); top: 0; bottom: 60px; width: 5px; margin-left: -2px; border-radius: 3px;
+    background: repeating-linear-gradient(var(--five) 0 12px, transparent 12px 26px); opacity: .8;
+  }
+  .shaft > * { position: relative; }
+  .shaft .intro { padding-bottom: 22px; }
+  .shaft .intro p { margin: 0; max-width: 46ch; }
+  .faller { position: sticky; top: 42vh; height: 0; z-index: 0; pointer-events: none; }
+  .faller svg { position: absolute; left: var(--drop-x); width: 70px; height: 88px; margin: -44px 0 0 -35px; overflow: visible; }
+  .skyline { position: absolute; left: 0; right: 0; pointer-events: none; fill: var(--white); opacity: .6; }
+  .cards { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @media (min-width: 860px) { .cards { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .card.wide { grid-column: 1 / -1; } }
+  .card { background: var(--white); border-radius: 22px; padding: 20px 20px 16px; min-width: 0; container-type: inline-size; }
+  .card h3 { font: 700 28px/1.05 var(--head); margin: 0 0 4px; }
+  .card p { margin: 0 0 12px; }
+  .quiet { color: var(--ink-2); font-size: 15px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; }
+  .btn { min-height: 46px; padding: 8px 18px; border: 0; border-radius: 23px; background: var(--ink); color: var(--white); font: 700 17px/1.1 var(--head); letter-spacing: .01em; }
+  .btn:active { transform: translateY(2px); }
+  .btn.alt { background: var(--white); color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+  .btn.go { background: var(--five); color: var(--ink); }
+  .btn[aria-checked="true"], .btn.alt[aria-pressed="true"] { background: var(--four); color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .out { background: var(--mist); border-radius: 14px; padding: 14px 16px; margin: 0 0 12px; }
+  .out dl { margin: 0; }
+  .out dt { font: 700 13.5px/1.3 var(--head); letter-spacing: .02em; color: var(--ink-2); margin-top: 8px; }
+  .out dt:first-child { margin-top: 0; }
+  .out dd { margin: 0; }
+  .big { font: 700 24px/1.2 var(--head); }
+  .game { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+  @container (min-width: 700px) { .game { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); align-items: center; gap: 28px; } }
+  .field { position: relative; width: 100%; max-width: 380px; margin: 0 auto; }
+  .field canvas { display: block; width: 100%; aspect-ratio: 4 / 5; background: var(--mist); border-radius: 16px; touch-action: manipulation; }
+  .hud { display: flex; justify-content: space-between; align-items: baseline; font: 700 18px/1.2 var(--head); margin: 0 auto 6px; max-width: 380px; font-variant-numeric: tabular-nums; }
+  .pads { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 8px; margin: 8px auto 0; max-width: 380px; }
+  .pads .btn { min-height: 56px; padding: 6px; font-size: 18px; }
+  .grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 4px; margin: 0 0 12px; }
+  .cell {
+    min-height: 60px; min-width: 0; padding: 2px; border: 2px solid var(--ink); border-radius: 8px; background: var(--white);
+    font: 600 10.5px/1.15 var(--text); overflow-wrap: anywhere; hyphens: auto; -webkit-hyphens: auto;
+  }
+  @container (min-width: 420px) { .cell { font-size: 12px; min-height: 68px; } }
+  .cell[aria-pressed="true"] { background: var(--ink); color: var(--white); }
+  .cell.win { background: var(--four); color: var(--ink); }
+  .pick { min-height: 40px; padding: 6px 14px; border: 2px solid var(--ink); border-radius: 20px; background: var(--white); font: 600 15px/1.1 var(--text); }
+  .pick[aria-pressed="true"] { background: var(--ink); color: var(--white); }
+  .fieldrow { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 0 8px; }
+  .fieldrow input { width: 96px; min-height: 42px; padding: 6px 10px; border: 2px solid var(--ink); border-radius: 10px; background: var(--white); text-align: right; font-weight: 700; }
+  .lines { border-top: 2px dashed var(--mist); margin: 12px 0; padding-top: 10px; }
+  .line { display: flex; justify-content: space-between; gap: 12px; margin: 0 0 4px; }
+  .line b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .feed { list-style: none; margin: 0; padding: 0; font-size: 15px; color: var(--ink-2); }
+  .feed li { padding: 5px 0; border-bottom: 1px solid var(--mist); overflow-wrap: anywhere; }
+  .feed li:first-child { color: var(--ink); font-weight: 600; }
+  .said { min-height: 24px; margin: 0; padding: 12px 0; font-size: 15px; font-weight: 600; }
+  .groundwrap { padding-top: 40px; }
+  .groundwrap svg { display: block; width: 100%; height: auto; }
+  .groundwrap p { margin: 0; padding: 10px 0 0; font-size: 15px; background: var(--sky); transition: background-color .8s linear; }
+
+  /* Scroll is the camera. Where the browser can tie animation to scroll, stations arrive as you pass them. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .card { animation: station linear both; animation-timeline: view(); animation-range: entry 0% entry 80%; }
+      @keyframes station { from { opacity: .35; transform: translateY(70px) scale(.93) rotate(-1.2deg); } to { opacity: 1; transform: none; } }
+      .shaft::before { animation: dropline linear both; animation-timeline: view(); animation-range: entry 40% exit 40%; }
+      @keyframes dropline { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+      .faller svg { animation: tumble linear both; animation-timeline: scroll(root); }
+      @keyframes tumble { from { transform: rotate(-20deg); } to { transform: rotate(700deg); } }
+      .skyline { animation: lift linear both; animation-timeline: scroll(root); }
+      .skyline.b { animation-name: lift2; }
+      @keyframes lift { from { transform: translateY(160px); } to { transform: translateY(-420px); } }
+      @keyframes lift2 { from { transform: translateY(60px); } to { transform: translateY(-160px); } }
+      .groundwrap svg { animation: land linear both; animation-timeline: view(); animation-range: entry 0% cover 45%; }
+      @keyframes land { from { transform: translateY(50px); } to { transform: none; } }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .blink, .sweat, .steam, .stars circle, .lit { animation: none !important; }
+    #bubble, body { transition: none; }
+    .faller { display: none; }
+  }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
+
+  /* ---------- postcard ---------- */
+  dialog { border: 0; border-radius: 22px; padding: 20px; width: min(94vw, 720px); max-height: 94vh; color: var(--ink); background: var(--white); }
+  dialog::backdrop { background: rgba(43, 37, 80, .6); }
+  dialog h2 { font-size: 34px; }
+  dialog img { display: block; max-width: 100%; max-height: 52vh; width: auto; height: auto; margin: 0 auto 12px; border-radius: 12px; background: var(--sky); }
+  dialog[open] { animation: cardin .3s cubic-bezier(.2, 1.4, .4, 1); }
+  @keyframes cardin { from { opacity: 0; transform: translateY(30px) scale(.94) rotate(-2deg); } }
+  @media (prefers-reduced-motion: reduce) { dialog[open] { animation: none; } }
+
+  /* ---------- the record and the facts ---------- */
+  .record { padding-top: 56px; }
+  .record > p { margin: 0 0 20px; max-width: 60ch; }
+  .tablecard { background: var(--white); border-radius: 22px; padding: 8px 20px 12px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 15.5px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 10px 8px 10px 0; border-bottom: 1px solid var(--mist); }
+  tr:last-child td { border-bottom: 0; }
+  th { font: 700 14px/1.2 var(--head); letter-spacing: .02em; color: var(--ink-2); }
+  .facts { padding-top: 48px; padding-bottom: 64px; display: grid; gap: 4px 36px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 860px) { .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .facts .notice { grid-column: 1 / -1; } }
+  .facts h3 { font: 700 21px/1.2 var(--head); margin: 14px 0 2px; }
+  .facts p { margin: 0 0 8px; font-size: 15.5px; color: var(--ink-2); max-width: 62ch; }
+  .facts b, .facts strong { color: var(--ink); }
+  .facts a { color: var(--ink); }
+  .notice { border-top: 2px solid var(--ink); margin-top: 18px; padding-top: 14px; }
+  #confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+</style>
+</head>
+<body>
+<header class="hero wrap">
+  <h1><span class="q">Is it 364 yet?</span><span id="answer">Not yet.</span></h1>
+  <div class="sign" id="sign">
+    <svg id="art" viewBox="0 0 1000 700" aria-hidden="true" focusable="false"></svg>
+    <button id="poke" type="button" aria-label="Poke the 5"></button>
+    <p id="bubble" role="status" hidden></p>
+    <div class="say posts between">
+      <p class="lead" id="lead"><b>The 5 is hanging on.</b> If email stays down for one full day, it falls, and 365 becomes 364.</p>
+      <p class="plaque" id="plaque" hidden>Days since the 5 last nearly fell <b id="plaque-n">0</b></p>
+      <div class="stats">
+        <p style="margin:0"><b id="n1">365.0000</b><span id="n1l">days, and falling</span></p>
+        <p style="margin:0"><b id="n2">24:00:00</b><span id="n2l">until 364 is official</span></p>
+      </div>
+      <p class="nums" id="nums"></p>
+      <div class="teams" id="teams">
+        <button class="team hold" id="t5" type="button" aria-pressed="false">Hold on, 5!</button>
+        <button class="team letgo" id="t4" type="button" aria-pressed="false">Let go, 5.</button>
+      </div>
+      <p class="note" id="bet-note" role="status">Pick a side. Stake: one slice of cake.</p>
+      <div class="scrub" id="scrub-box">
+        <label for="scrub">Drag through the day. Let go and it comes back. <output id="scrub-out" for="scrub"></output></label>
+        <input type="range" id="scrub" min="0" max="24" step="0.05" value="0">
+          <div class="ends" aria-hidden="true"><span>Hour 0: fine</span><span>Hour 24: it falls</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="below posts between">
+    <p class="note" id="hours-l" hidden>Optional: call the hour of the all-clear too.</p>
+    <div class="hours" id="hours" role="group" aria-label="Call the hour of the all-clear" hidden></div>
+    <div class="tools">
+      <button class="btn" id="postcard-btn" type="button">Send a postcard</button>
+      <button class="btn alt" id="snd" type="button" role="switch" aria-checked="false">Sound: off</button>
+      <button class="btn alt" id="tilt-btn" type="button" aria-pressed="false" hidden>Let me feel the tilt</button>
+    </div>
+  </div>
+  <p class="sr" id="alt" role="status" aria-live="polite"></p>
+</header>
+
+<dialog id="pc" aria-labelledby="pc-h">
+  <h2 id="pc-h">A postcard from the ledge</h2>
+  <img id="pc-img" alt="Postcard" width="1200" height="630">
+  <div class="row">
+    <button class="btn alt" id="pc-wide" type="button" aria-pressed="true">Wide, for links and chat</button>
+    <button class="btn alt" id="pc-tall" type="button" aria-pressed="false">Tall, for phones</button>
+  </div>
+  <p class="quiet" id="pc-note" role="status">Drawing the card.</p>
+  <div class="row">
+    <button class="btn go" id="pc-share" type="button" hidden>Share it</button>
+    <button class="btn" id="pc-save" type="button">Save the image</button>
+    <button class="btn alt" id="pc-link" type="button">Copy the link</button>
+    <button class="btn alt" id="pc-close" type="button">Close</button>
+  </div>
+</dialog>
+
+<main>
+  <section class="wrap" aria-labelledby="toys-h">
+    <div class="shaft posts">
+      <svg class="skyline" style="top:8%" viewBox="0 0 1000 120" aria-hidden="true"><path d="M90 60a34 34 0 0 1 60-18a26 26 0 0 1 44 18a14 14 0 0 1 0 28H90a14 14 0 0 1 0-28z"/></svg>
+      <svg class="skyline b" style="top:38%" viewBox="0 0 1000 120" aria-hidden="true"><path d="M700 50a34 34 0 0 1 60-18a26 26 0 0 1 44 18a14 14 0 0 1 0 28H700a14 14 0 0 1 0-28z"/></svg>
+      <svg class="skyline" style="top:70%" viewBox="0 0 1000 120" aria-hidden="true"><path d="M260 40a34 34 0 0 1 60-18a26 26 0 0 1 44 18a14 14 0 0 1 0 28H260a14 14 0 0 1 0-28z"/></svg>
+      <div class="faller" aria-hidden="true"><svg viewBox="-30 -30 260 310"><path d="M155 35H65L55 115C95 95 165 105 165 165C165 225 80 235 40 195" fill="none" stroke="#FF5C7A" stroke-opacity=".38" stroke-width="50" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="intro between">
+        <h2 id="toys-h">While the 5 hangs on</h2>
+        <p>It is a long way down. These are the floors on the way. Everything here stays in your browser.</p>
+      </div>
+      <div class="cards">
+
+        <div class="card wide">
+          <div class="game">
+            <div>
+              <div class="hud"><span id="g-score">Tickets closed: 0</span><span id="g-miss">Misses: 0 of 3</span></div>
+              <div class="field">
+                <canvas id="game" width="640" height="800" role="img" aria-label="Inbox Defender playing field. The score is in the text above it."></canvas>
+              </div>
+              <div class="pads">
+                <button class="btn alt" id="g-left" type="button">Left</button>
+                <button class="btn go" id="g-ok" type="button">Start</button>
+                <button class="btn alt" id="g-right" type="button">Right</button>
+              </div>
+            </div>
+            <div>
+              <h3>Inbox Defender</h3>
+              <p>You are the one IT person today, and the 5 is carrying your tray. Catch every email before it hits the floor. Yellow ones fall twice as fast. Let the fish go by: that one is a phish. Three misses and the reply-alls win.</p>
+              <p class="quiet">Tap a lane, use the buttons, or the arrow keys (A and D work too). Once you are playing, the middle button mutes the thread, which clears the screen. You get one mute, and one more every 20 tickets. The space bar does the same.</p>
+              <p class="big" id="g-last">Best: 0</p>
+              <div class="row"><button class="btn" id="g-copy" type="button" hidden>Copy my result</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Outage bingo</h3>
+          <p>Tap what you have seen today. Five in a row wins nothing.</p>
+          <div class="grid" id="grid"></div>
+          <div class="row">
+            <b id="tally" role="status">1 of 25</b>
+            <button class="btn" id="bingo-copy" type="button">Copy my card</button>
+            <button class="btn alt" id="bingo-new" type="button">Deal a new card</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Helpdesk ticket</h3>
+          <p>Somebody has to file it. Pick who.</p>
+          <div class="row" id="senders"></div>
+          <div class="row"><button class="btn go" id="t-new" type="button">Write the ticket</button></div>
+          <div class="out" id="t-out" role="status"><p class="quiet" style="margin:0">No new tickets. That will not last.</p></div>
+          <div class="row"><button class="btn" id="t-copy" type="button" hidden>Copy the ticket</button></div>
+        </div>
+
+        <div class="card">
+          <h3>Missed mail</h3>
+          <p id="m-note">What you are not receiving right now.</p>
+          <label class="fieldrow">Emails you get a day <input id="in-mail" type="number" inputmode="numeric" min="0" max="5000" value="120"></label>
+          <label class="fieldrow">Meetings you get a day <input id="in-meet" type="number" inputmode="numeric" min="0" max="50" value="5"></label>
+          <div class="lines">
+            <div class="line"><span>Emails not received</span><b id="d-mail">0</b></div>
+            <div class="line"><span>Reply-alls dodged</span><b id="d-reply">0</b></div>
+            <div class="line"><span>Meeting invites lost</span><b id="d-meet">0</b></div>
+            <div class="line"><span>Due when service returns</span><b>all of it, at once</b></div>
+          </div>
+          <ul class="feed" id="feed" aria-label="Subject lines you are not receiving"></ul>
+        </div>
+
+        <div class="card">
+          <h3>Root cause finder</h3>
+          <p>The official report takes weeks. This takes a second.</p>
+          <div class="out"><p class="big" id="c-out" role="status" style="margin:0">Somebody did something to something.</p></div>
+          <div class="row">
+            <button class="btn go" id="c-pull" type="button">Find the root cause</button>
+            <button class="btn" id="c-copy" type="button">Copy it</button>
+          </div>
+        </div>
+
+      </div>
+      <p class="said between" id="said" role="status"></p>
+      <div class="groundwrap">
+        <svg id="ground" viewBox="0 0 1000 360" aria-hidden="true" focusable="false"></svg>
+        <p>Ground floor. The office is ready either way: there is a mattress, and there is cake.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="record wrap" aria-labelledby="record-h">
+    <h2 id="record-h">Every time the 5 nearly fell</h2>
+    <p id="f-tally"></p>
+    <div class="tablecard">
+      <table aria-label="Outage archive, newest first">
+        <thead><tr><th scope="col">Date</th><th scope="col">Hours down</th><th scope="col">Final score</th><th scope="col">Did the 5 fall?</th></tr></thead>
+        <tbody id="record-body"><tr><td colspan="4">Nothing on file yet.</td></tr></tbody>
+      </table>
+    </div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="share" type="button">Copy the invitation</button><button class="btn alt" id="a-copy" type="button">Copy the record</button></div>
+  </section>
+
+  <section class="facts wrap" id="facts">
+    <div>
+      <h3>What this is</h3>
+      <p>A joke with a scorekeeper. When Microsoft 365 has been down for one full day, 365 becomes 364. This site tracks every Microsoft 365 outage that Microsoft's public status page shows, starting 12 November 2026, and keeps the archive.</p>
+      <h3>When the clock starts</h3>
+      <p id="f-start"><b>8:17 AM Pacific on 12 November 2026</b> for the current outage. That is the start time Microsoft gave for incident EX1550543, as reported, so it is approximate.</p>
+    </div>
+    <div>
+      <h3>What counts as back up</h3>
+      <p><b>Microsoft says so.</b> The clock stops when Microsoft's <a href="https://status.cloud.microsoft/" rel="noopener">public status page</a> shows no problem for Microsoft 365 on two checks in a row. "Works for me" does not count.</p>
+      <h3>Who keeps score</h3>
+      <p>A script reads that status page on a timer. <b id="checked">It has not reported in yet.</b> <span id="mssays"></span> The stop time can be up to 20 minutes late, and your own mailbox may come back sooner or later than this page says. The sky on this page is worked out from the clock for the Pacific coast; it is not a weather report.</p>
+    </div>
+    <div class="notice">
+      <p><strong>This is a parody.</strong> It is not affiliated with, endorsed by or connected to Microsoft. Microsoft 365 and Outlook are trademarks of Microsoft Corporation.</p>
+      <p>No cookies, no tracking, no ads, no sign-in, no real money. Your bingo card, your side and your high score stay in your browser. Poking the 5 is counted nowhere. Real people work long nights to fix these. The first slice of cake is theirs.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+/* Is it 364 yet: pure logic. No DOM in this block, so it can be tested with jsc. */
+var M364 = (function () {
+  "use strict";
+  var DAY = 24 * 60 * 60 * 1000;
+
+  function pick(a, rnd) { return a[Math.floor((rnd || Math.random)() * a.length)]; }
+  function pad(n, w) { var s = String(n); while (s.length < (w || 2)) { s = "0" + s; } return s; }
+
+  // ---- the scorekeeper file ----
+  // Accepts status.json version 2, or version 1 (top-level start and end). Returns null for junk.
+  function incidentClean(x) {
+    if (!x || typeof x !== "object") { return null; }
+    var a = Date.parse(x.start), b = Date.parse(x.end);
+    if (!isFinite(a) || !isFinite(b) || b < a) { return null; }
+    var hours = typeof x.hours === "number" && isFinite(x.hours) && x.hours >= 0 ? x.hours : (b - a) / 3600000;
+    return { id: String(x.id || new Date(a).toISOString().slice(0, 10)).slice(0, 24), start: a, end: b, hours: hours,
+             made364: typeof x.made364 === "boolean" ? x.made364 : hours >= 24 };
+  }
+  function statusNormalize(j) {
+    if (!j || typeof j !== "object") { return null; }
+    var out = { checked: 0, status: "", since: "", current: null, incidents: [] }, c = Date.parse(j.checked), a, i, inc;
+    if (isFinite(c)) { out.checked = c; }
+    if (typeof j.status === "string") { out.status = j.status.slice(0, 60); }
+    if (typeof j.tracking_since === "string" && /^\d{4}-\d\d-\d\d/.test(j.tracking_since)) { out.since = j.tracking_since.slice(0, 10); }
+    if (j.v === 2 || "current" in j || Array.isArray(j.incidents)) {
+      if (j.current && typeof j.current === "object") {
+        a = Date.parse(j.current.start);
+        if (isFinite(a)) { out.current = { id: String(j.current.id || new Date(a).toISOString().slice(0, 10)).slice(0, 24), start: a }; }
+      }
+      if (Array.isArray(j.incidents)) {
+        for (i = 0; i < j.incidents.length && out.incidents.length < 200; i++) {
+          inc = incidentClean(j.incidents[i]);
+          if (inc) { out.incidents.push(inc); }
+        }
+      }
+    } else {
+      a = Date.parse(j.start);
+      if (!isFinite(a)) { return null; }
+      inc = incidentClean({ start: j.start, end: j.end });
+      if (inc) { out.incidents.push(inc); } else { out.current = { id: new Date(a).toISOString().slice(0, 10), start: a }; }
+    }
+    out.incidents.sort(function (p, q) { return q.start - p.start; });
+    if (!out.since) {
+      a = out.incidents.length ? out.incidents[out.incidents.length - 1].start : out.current ? out.current.start : 0;
+      if (out.current && out.current.start < a) { a = out.current.start; }
+      if (a) { out.since = new Date(a).toISOString().slice(0, 10); }
+    }
+    return out;
+  }
+  function incidentScore(hours) { return 365 - Math.min(1, hours / 24); }
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  // "2026-11-12" -> "12 Nov 2026"
+  function dayLabel(id) {
+    var m = /^(\d{4})-(\d\d)-(\d\d)/.exec(String(id));
+    if (!m || !MONTHS[+m[2] - 1]) { return String(id); }
+    return (+m[3]) + " " + MONTHS[+m[2] - 1] + " " + m[1];
+  }
+
+  // ---- the clock: everything the screen needs, from the scorekeeper model and a time ----
+  function clockState(t, start) {
+    var target = start + DAY;
+    var downMs = Math.max(0, Math.min(t, target) - start);
+    var frac = Math.min(1, downMs / DAY);
+    var secs = Math.max(0, Math.floor((target - t) / 1000));
+    return {
+      target: target, frac: frac, downMs: Math.max(0, t - start), count: 365 - frac, secs: secs,
+      state: t >= target ? "party" : "live",
+      hms: pad(Math.floor(secs / 3600)) + ":" + pad(Math.floor((secs % 3600) / 60)) + ":" + pad(secs % 60)
+    };
+  }
+  function yearTally(model, t) {
+    var year = new Date(t).getUTCFullYear(), lost = 0, i, inc;
+    for (i = 0; i < model.incidents.length; i++) {
+      inc = model.incidents[i];
+      if (new Date(inc.start).getUTCFullYear() === year) { lost += inc.hours / 24; }
+    }
+    if (model.current && new Date(model.current.start).getUTCFullYear() === year) {
+      lost += Math.max(0, t - model.current.start) / DAY;
+    }
+    return 365 - lost;
+  }
+  var RECENT_MS = 48 * 60 * 60 * 1000;
+  function view(model, t) {
+    var v = { year: new Date(t).getUTCFullYear(), tally: yearTally(model, t), state: "idle", c: null,
+              last: model.incidents[0] || null, recent: false, daysSince: -1 };
+    v.year364 = v.tally <= 364;
+    if (model.current) {
+      v.c = clockState(t, model.current.start);
+      v.state = v.c.state;
+      v.count = v.c.count;
+    } else {
+      v.count = v.tally;
+      if (v.last) {
+        v.recent = t - v.last.end < RECENT_MS;
+        v.daysSince = Math.max(0, Math.floor((t - v.last.end) / DAY));
+      }
+    }
+    return v;
+  }
+  // Which drawing to show: "live", "party", "off", "idle" or "retired".
+  function pose(v) {
+    if (v.state !== "idle") { return v.state; }
+    if (v.recent && v.last.made364) { return "party"; }
+    if (v.year364) { return "retired"; }
+    return v.recent ? "off" : "idle";
+  }
+  function ago(ms, nowMs) {
+    var m = Math.round((nowMs - ms) / 60000);
+    return m < 1 ? "under a minute ago" : m === 1 ? "1 minute ago" : m < 90 ? m + " minutes ago" : Math.round(m / 60) + " hours ago";
+  }
+  // ---- bets. Five ideas, measured in hours from the start of the incident. ----
+  var H = 60 * 60 * 1000;
+  var BUCKETS = [
+    { name: "Under 16 hours", note: "optimist", end: 16 * H },
+    { name: "16 to 19 hours", note: "night shift", end: 19 * H },
+    { name: "19 to 22 hours", note: "before coffee", end: 22 * H },
+    { name: "22 to 24 hours", note: "photo finish", end: 24 * H },
+    { name: "It makes 364", note: "long shot", end: Infinity }
+  ];
+  // end is null while the incident runs. Returns the winning bucket (-1 while undecided)
+  // and which buckets are already past.
+  function betResolve(t, start, end) {
+    var winner = -1, gone = [], i;
+    if (end !== null && end - start < DAY) { for (i = 0; i < 5; i++) { if (end - start < BUCKETS[i].end) { winner = i; break; } } }
+    else if (end !== null || t - start >= DAY) { winner = 4; }
+    for (i = 0; i < 5; i++) { gone.push(t - start >= BUCKETS[i].end); }
+    return { winner: winner, gone: gone };
+  }
+  // A bet is a team ("5" holds on, "4" it makes 364), for one incident, with an optional hour window i (0..3).
+  function betValid(bet, id) {
+    return !!(bet && (bet.team === "5" || bet.team === "4") && bet.id === id);
+  }
+  function betTeamWinner(winner) { return winner < 0 ? "" : winner === 4 ? "4" : "5"; }
+  function betNote(bet, winner) {
+    var won = betTeamWinner(winner);
+    if (!won) {
+      if (!bet) { return "Pick a side. Stake: one slice of cake."; }
+      return (bet.team === "5" ? "You are on Team 5: it holds on." : "You are on Team 4: it lets go.") +
+        (typeof bet.i === "number" && BUCKETS[bet.i] && bet.team === "5" ? " Your call: all clear in " + BUCKETS[bet.i].name.toLowerCase() + "." : "") +
+        " Stake: one slice of cake. No changes.";
+    }
+    var line = won === "5" ? "Team 5 wins: it held on." : "Team 4 wins: it let go.";
+    if (!bet) { return line + " Betting is closed."; }
+    if (bet.team !== won) { return line + " You owe the on-call a slice of cake."; }
+    return line + " You called it. One slice of cake is yours." +
+      (bet.team === "5" && typeof bet.i === "number" ? (bet.i === winner ? " You even called the hour." : " You missed the hour, though.") : "");
+  }
+
+  // ---- bingo ----
+  var SQUARES = [
+    "Email asking if email is down", "Invite to a meeting about it", "A desk phone rings",
+    "“Did you try restarting?”", "Coworker rediscovers walking", "Someone prints an email",
+    "“It's back!” (it isn't)", "Lunch at 10:40", "Fax machine, said seriously",
+    "“Is it just me?”", "Boss asks for an ETA", "“Can you text it to me?”",
+    "Personal email used for work", "Status page says all good", "Someone reads the news aloud",
+    "“Should we switch providers?”", "Sticky note, hand delivered", "Group chat is down too",
+    "Refreshing the inbox anyway", "“I never got your email” is true", "A desk gets cleaned",
+    "Someone goes home “to work”", "“Next update in 60 minutes”", "Long line for coffee",
+    "IT person seen running", "“A subset of users”", "Phone call instead of an email",
+    "A USB stick appears", "Whiteboard used for real", "“Back in my day” speech",
+    "Password changed, just in case", "Meeting cancelled, nobody told", "Out-of-office envy",
+    "“Is the wifi down too?”", "Blame the last update", "Hold music"
+  ];
+  var FREE = "Email is down";
+  var LINES = (function () {
+    var out = [], i, j, row, col;
+    for (i = 0; i < 5; i++) {
+      row = []; col = [];
+      for (j = 0; j < 5; j++) { row.push(i * 5 + j); col.push(j * 5 + i); }
+      out.push(row, col);
+    }
+    out.push([0, 6, 12, 18, 24], [4, 8, 12, 16, 20]);
+    return out;
+  })();
+  function bingoDeal(rnd) {
+    rnd = rnd || Math.random;
+    var pool = SQUARES.slice(), picks = [], on = [], i;
+    while (picks.length < 24) { picks.push(pool.splice(Math.floor(rnd() * pool.length), 1)[0]); }
+    picks.splice(12, 0, FREE);
+    for (i = 0; i < 25; i++) { on.push(i === 12); }
+    return { squares: picks, on: on };
+  }
+  function bingoValid(c) {
+    return !!(c && c.squares && c.squares.length === 25 && c.on && c.on.length === 25);
+  }
+  function bingoScore(on) {
+    var wins = {}, any = false, n = 0, i, k, full;
+    for (i = 0; i < LINES.length; i++) {
+      full = true;
+      for (k = 0; k < 5; k++) { if (!on[LINES[i][k]]) { full = false; } }
+      if (full) { any = true; for (k = 0; k < 5; k++) { wins[LINES[i][k]] = 1; } }
+    }
+    for (i = 0; i < 25; i++) { if (on[i]) { n++; } }
+    return { any: any, wins: wins, count: n };
+  }
+  function bingoEmoji(on) {
+    var rows = [], i, j, r;
+    for (i = 0; i < 5; i++) {
+      r = "";
+      for (j = 0; j < 5; j++) { r += on[i * 5 + j] ? "🟨" : "⬛"; }
+      rows.push(r);
+    }
+    return rows.join("\n");
+  }
+
+  // ---- Inbox Defender ----
+  var G_LANES = 4, G_ROWS = 5;
+  var MAIL = ["Reply all", "+1", "Please remove me", "Is email down?", "Me too", "Any update?", "Unsubscribe",
+              "Stop replying all", "Did you get my email?", "Is it just me?"];
+  var RUSH = ["URGENT!!", "Boss: ETA?", "Need this by 2", "Call me now"];
+  var PHISH = ["You won a cruise", "Free gift card", "Click here", "A prince needs you"];
+  function gameNew(hi) {
+    return { items: [], player: 1, score: 0, misses: 0, mutes: 1, ticks: 0, started: false, over: false,
+             hi: hi || 0, last: "", nextMute: 20 };
+  }
+  function gameInterval(score) { return Math.max(230, 640 - score * 6); }
+  function gameMove(g, d) { g.player = Math.max(0, Math.min(G_LANES - 1, g.player + d)); }
+  function gameSet(g, lane) { g.player = Math.max(0, Math.min(G_LANES - 1, lane)); }
+  // Mute thread: clears the board. Returns how many messages were deflected.
+  function gameMute(g) {
+    if (!g.started || g.over || g.mutes < 1) { return -1; }
+    var n = g.items.length;
+    g.mutes--; g.items = [];
+    g.last = "Thread muted. " + n + " deflected.";
+    return n;
+  }
+  // A new item is allowed only when the player can still reach everything.
+  function gameCanSpawn(g, lane, kind) {
+    var speed = kind === "rush" ? 2 : 1, land = g.ticks + Math.ceil(G_ROWS / speed), i, it;
+    for (i = 0; i < g.items.length; i++) {
+      it = g.items[i];
+      if (it.lane === lane && (it.land === land || it.row === 0)) { return false; }
+      if (it.lane === lane && (kind === "rush" || it.kind === "rush")) { return false; }
+      if (kind !== "phish" && it.kind !== "phish" && Math.abs(it.lane - lane) > 2 * Math.abs(it.land - land)) { return false; }
+    }
+    return true;
+  }
+  // One step of the game clock. Returns a list of events for sound and text.
+  function gameStep(g, rnd) {
+    rnd = rnd || Math.random;
+    var ev = [], keep = [], i, it;
+    if (!g.started || g.over) { return ev; }
+    g.ticks++;
+    for (i = 0; i < g.items.length; i++) {
+      it = g.items[i];
+      it.row += it.kind === "rush" ? 2 : 1;
+      if (it.row < G_ROWS) { keep.push(it); continue; }
+      if (it.lane === g.player) {
+        if (it.kind === "phish") { g.misses++; g.last = "Oops. \"" + it.msg + "\" was a phish."; ev.push({ type: "phish", msg: it.msg }); }
+        else { g.score += it.kind === "rush" ? 2 : 1; g.last = "Closed: \"" + it.msg + "\""; ev.push({ type: "catch", msg: it.msg }); }
+      } else if (it.kind === "phish") { ev.push({ type: "dodge", msg: it.msg }); }
+      else { g.misses++; g.last = "Missed: \"" + it.msg + "\""; ev.push({ type: "miss", msg: it.msg }); }
+    }
+    g.items = keep;
+    if (g.score >= g.nextMute) {
+      g.nextMute += 20;
+      if (g.mutes < 2) { g.mutes++; ev.push({ type: "mute+" }); }
+    }
+    if (g.misses >= 3) {
+      g.over = true;
+      if (g.score > g.hi) { g.hi = g.score; ev.push({ type: "best" }); }
+      g.last = "The reply-alls win.";
+      ev.push({ type: "over" });
+      return ev;
+    }
+    var p = Math.min(0.85, 0.45 + g.score * 0.006);
+    if (g.items.length === 0 || rnd() < p) {
+      var r = rnd(), kind = g.score >= 5 && r < 0.16 ? "phish" : g.score >= 10 && r < 0.3 ? "rush" : "mail";
+      for (i = 0; i < 4; i++) {
+        var lane = Math.floor(rnd() * G_LANES);
+        if (gameCanSpawn(g, lane, kind)) {
+          g.items.push({ lane: lane, row: 0, kind: kind, land: g.ticks + Math.ceil(G_ROWS / (kind === "rush" ? 2 : 1)),
+                         msg: pick(kind === "phish" ? PHISH : kind === "rush" ? RUSH : MAIL, rnd) });
+          break;
+        }
+      }
+    }
+    return ev;
+  }
+  function gameResult(score) {
+    return "I closed " + score + (score === 1 ? " ticket" : " tickets") + " before the reply-alls got me.";
+  }
+
+  // ---- helpdesk tickets ----
+  var SENDERS = [
+    { id: "polite", name: "Polite",
+      subject: ["Small question about email (no rush)", "Sorry to bother you: email?", "Possibly my fault: Outlook",
+                "Email, when you have a moment", "Tiny thing, probably nothing"],
+      open: ["Hi team, so sorry to add to your day.", "Good morning! I know you're busy.",
+             "Hello, I hope this finds you well, and finds you at all.", "Hi, I hate to be a bother.",
+             "Hello! First, thank you for everything you do."],
+      mid: ["My email has not arrived since this morning.",
+            "Outlook says it is trying to connect. It has been trying for six hours and I admire that.",
+            "I restarted twice, and then once more to be polite.",
+            "I think I may have broken email. I clicked something on Tuesday.",
+            "My inbox has gone very quiet and I have started to enjoy it, which worries me."],
+      ask: ["No rush at all. Sometime today or this quarter is fine.",
+            "Could you tell me if I should keep waiting, or start writing letters?",
+            "If it is just me, please don't tell the others.",
+            "Happy to bring cookies if that speeds anything up.",
+            "Whenever you get a chance. I'll be at my desk, looking at it."],
+      sign: ["Thanks so much!", "Sorry again.", "Warmly, and patiently.", "No reply needed. I couldn't read it anyway."],
+      pri: ["Low (but it is on my mind)", "Low, sorry", "Whatever you think is best", "Medium, if that's allowed"] },
+    { id: "panic", name: "Panicked",
+      subject: ["EMAIL DOWN???", "HELP nothing is sending", "URGENT URGENT outlook", "is it just me?? PLEASE", "everything is gone"],
+      open: ["EMAIL IS DOWN.", "Nothing works. NOTHING.", "I have a thing due at 2 and it is 1:58.",
+             "I pressed send eleven times.", "Is this the thing from the security training video?"],
+      mid: ["The little spinning circle has been spinning since I got here.",
+            "I unplugged my monitor and plugged it back in and it did not help.",
+            "My whole career is in the Drafts folder.",
+            "I can hear other people panicking so I know it is not just me, but it FEELS like just me.",
+            "I typed my password so many times it stopped looking like a word."],
+      ask: ["Please call me on my desk phone. I had to look up my own number.",
+            "Do I go home? Tell me if I go home.", "How long? A number. Any number.",
+            "Should I be writing things down on paper? I'm writing things down on paper."],
+      sign: ["PLEASE.", "Sent from my phone, standing up.", "Waiting right here.", "Thank you, sorry for the caps."],
+      pri: ["CRITICAL", "Highest there is", "P0 (is there a P minus 1?)", "Emergency (self-declared)"] },
+    { id: "exec", name: "Executive",
+      subject: ["Email", "Need this fixed", "Outlook: ETA?", "Fwd: Fwd: is this us?", "Quick one"],
+      open: ["Email is down.", "Flagging that email appears to be down.",
+             "I am told email is down, by someone who walked to my office.", "Not sure who owns this.",
+             "Saw something on the news about this."],
+      mid: ["I have a board call in ten minutes and the slides are in my inbox.",
+            "My assistant has printed my calendar. It is on paper. I am holding it.",
+            "I was assured the cloud does not go down.",
+            "I am sending this from my personal account, which I am told not to do.",
+            "Can we get the vendor on the phone? All of them?"],
+      ask: ["Need an ETA by end of day. Ideally an ETA for the ETA sooner.",
+            "Let's set up a call to align on this. Send an invite. Somehow.",
+            "What is our plan B? Do we have a plan B? Is plan B fax?",
+            "Please fix mine first and then everyone else's.",
+            "Should we switch providers? Have a recommendation by lunch."],
+      sign: ["Thx", "Sent from my phone", "Regards", "Sent by text, since apparently that still works"],
+      pri: ["Top priority (mine)", "Executive", "Urgent, with visibility at the top", "High. Highest."] },
+    { id: "replyall", name: "Reply-All Guy",
+      subject: ["RE: RE: RE: RE: Is email down?", "RE: Please stop replying all", "RE: RE: unsubscribe",
+                "RE: [ALL STAFF] RE: +1", "RE: RE: RE: Please remove me from this list"],
+      open: ["+1", "Same here.", "Replying all so everyone has visibility.", "Please remove me from this thread.",
+             "Adding the whole company for awareness."],
+      mid: ["Mine is also down. Just confirming for the group.",
+            "To everyone replying all: please stop replying all.",
+            "I did not ask to be on this thread, which I am now extending.",
+            "Has anyone tried emailing IT? I have emailed them four times.",
+            "Looping in the all-staff list in case they missed the first nine."],
+      ask: ["Can someone confirm they got this?", "Please reply all so we know who is affected.", "Unsubscribe.",
+            "Who started this thread? Asking on behalf of everyone I just added."],
+      sign: ["Thanks all!", "Sorry, that was meant for one person.", "+1 to my own email.", "Sent to 4,312 recipients."],
+      pri: ["Normal (sent with High Importance)", "FYI", "Everyone", "High, per the thread"] },
+    { id: "wrong", name: "Wrong Department",
+      subject: ["Printer is doing the email thing again", "Is it the wifi email or the regular email?",
+                "Conference room TV (also email)", "Badge reader? Not sure this is you",
+                "The coffee machine, and while I have you, email"],
+      open: ["Not sure if this is IT or facilities.", "I think the printer took down the email.",
+             "This might be related to the microwave on the third floor.", "While you're fixing email:",
+             "Someone said to open a ticket, so this is a ticket."],
+      mid: ["My email stopped right after I printed something, so you can see why I'm worried.",
+            "Also my chair squeaks, but that can be a separate ticket.",
+            "The internet works, but only the parts I don't need.",
+            "I restarted the printer, the router and a lamp.",
+            "Is the email inside the building or outside? If it is inside I can look for it."],
+      ask: ["Can someone come by? I'm near the big plant.", "Should I unplug anything else?",
+            "Let me know if you need the model number of the lamp.", "Please advise. I will be at the printer."],
+      sign: ["Cheers", "Thanks, and sorry if this is the wrong queue.",
+             "PS: the vending machine is out of the good chips.", "Regards from the third floor"],
+      pri: ["Medium (the chair is Low)", "Unknown", "Whatever the printer usually gets", "High for email, low for lamp"] }
+  ];
+  var AUTOREPLY = [
+    "Your ticket has been received. Updates will be sent by email.",
+    "Thank you for contacting the helpdesk. A confirmation has been emailed to you.",
+    "We value your patience. To check your ticket status, use the link in your email.",
+    "You are number {q} in the queue. You will be notified by email.",
+    "This mailbox is not monitored. Neither, at the moment, is any other.",
+    "Your ticket has been closed as a duplicate of everyone's ticket."
+  ];
+  function ticketMake(senderId, rnd) {
+    rnd = rnd || Math.random;
+    var s = null, i;
+    for (i = 0; i < SENDERS.length; i++) { if (SENDERS[i].id === senderId) { s = SENDERS[i]; } }
+    if (!s) { s = pick(SENDERS, rnd); }
+    var t = {
+      sender: s.name,
+      num: "HD-" + pad(10000 + Math.floor(rnd() * 89999), 5),
+      pri: pick(s.pri, rnd), subject: pick(s.subject, rnd),
+      body: pick(s.open, rnd) + " " + pick(s.mid, rnd) + " " + pick(s.ask, rnd) + " " + pick(s.sign, rnd),
+      reply: pick(AUTOREPLY, rnd).replace("{q}", String(300 + Math.floor(rnd() * 9000)))
+    };
+    t.text = "Ticket " + t.num + " (from: " + t.sender + ")\nPriority, self-assessed: " + t.pri +
+      "\nSubject: " + t.subject + "\n\n" + t.body + "\n\nHelpdesk auto-reply: " + t.reply;
+    return t;
+  }
+  // ---- root cause ----
+  var WHO = ["DNS", "An expired certificate", "A config change", "One missing comma", "A Friday deploy",
+             "The backup of the backup", "A calendar invite", "A full disk", "Daylight saving time", "The fix",
+             "Someone's out-of-office", "A reply-all from 2019", "A loose cable", "The office microwave",
+             "A sticky note", "The spare"];
+  var DID = ["quietly took down", "politely declined", "fell on", "lost an argument with", "rolled back",
+             "forgot about", "unplugged", "was promoted over", "sent a meeting invite to", "replied all to"];
+  var WHAT = ["the load balancer", "everyone's inbox", "the status page", "the rollback plan",
+              "the other data center", "itself", "the thing that fixes this", "the sign-in page",
+              "the off switch", "the backup plan"];
+  function causePull(rnd) {
+    rnd = rnd || Math.random;
+    if (rnd() < 0.2) { return ["It", "was", "DNS"]; }
+    return [pick(WHO, rnd), pick(DID, rnd), pick(WHAT, rnd)];
+  }
+  function causeSpin(i, rnd) { return pick([WHO, DID, WHAT][i], rnd); }
+
+  // ---- missed mail ----
+  var PREFIX = ["", "", "", "RE: ", "RE: RE: ", "FW: ", "RE: RE: FW: ", "REMINDER: ", "[ALL STAFF] ", "URGENT: "];
+  var SUBJECTS = [
+    "quick question", "Per my last email", "Circling back", "Final notice about your car's extended warranty",
+    "Mandatory fun: team-building survey", "Touching base", "Fridge cleanout Friday", "Your parking validation",
+    "Cake in the break room", "Timesheets are due", "Please disregard my previous email",
+    "Corrected: please disregard my previous email", "Meeting to plan the meeting", "Thoughts?",
+    "Org chart (v7 final FINAL)", "Someone left their headlights on", "You have won a cruise (again)",
+    "Your password expires in 3 days", "Out of office: back Monday", "The printer on 3 is jammed",
+    "Lunch orders by 10:30", "Synergy workshop: save the date", "Gentle reminder", "Less gentle reminder",
+    "Please welcome our new VP of Email", "Invoice attached (it isn't)", "Did you get my email?",
+    "Following up on my follow-up", "Free webinar: reach Inbox Zero", "Kitchen sink etiquette",
+    "A survey about the last survey", "Quick sync?", "You are now unsubscribed (you aren't)",
+    "Company picnic rain date", "Action required: no action required", "Lost: one blue umbrella",
+    "Your package could not be delivered", "A prince needs your help", "A newsletter you never signed up for",
+    "Sign the birthday card for someone you haven't met", "Is email down?", "Calendar invite: Outage retrospective"
+  ];
+  function mailSubject(rnd) { return pick(PREFIX, rnd) + pick(SUBJECTS, rnd); }
+  function mailNum(v, max) { v = parseFloat(v); return !isFinite(v) || v < 0 ? 0 : Math.min(v, max); }
+  function missedCounts(mailPerDay, meetPerDay, downDays) {
+    var mail = mailNum(mailPerDay, 5000) * downDays;
+    return { mail: Math.floor(mail), reply: Math.floor(mail * 0.04), meet: Math.floor(mailNum(meetPerDay, 50) * downDays) };
+  }
+
+  // ---- what the 5 says when poked ----
+  var QUIPS = {
+    live: ["I'm fine. This is fine.", "Is it DNS? It's DNS.", "Tell my inbox I love it.", "Don't look down. I looked down.",
+           "Have you tried turning it off and on again?", "I've had worse days. Not many.", "My arms are fine. Ask me in an hour.",
+           "Someone is fixing it. Right? Right?", "No, I can't check my email either.", "Stop poking. Start fixing.",
+           "The 4 keeps texting me.", "I was told this job had uptime.", "365 is my whole identity.", "Please hold. Literally.",
+           "I can see my desk from here.", "A status update would be lovely.", "Tell the 6 to stop staring.",
+           "Next update in 60 minutes. Great.", "I'm not slipping. The sign is rising.", "If I fall, save me some cake.",
+           "Okay, that tickles.", "One more poke and I file a ticket.", "Did you try restarting me?"],
+    idle: ["Quiet day. Don't jinx it.", "Everything works. I checked twice.", "The coffee is good up here.",
+           "I do my own stunts, you know.", "Inbox zero. Arms rested.", "Don't say the O-word.", "See you next outage."],
+    off: ["Never. Again.", "Did I mention I held on?", "I can't feel my arms.", "365 stands. So do I. Barely.", "Somebody owes me cake."],
+    four: ["Hi. I'm the 4. Big fan of the 5's work.", "Is this seat taken? It is now.", "I brought a hat.",
+           "364 has a nice ring to it.", "No hard feelings, 5.", "I've been waiting all year for this."],
+    hold: ["Thank you. I felt that.", "Team 5! Team 5!", "You believe in me. Bold."],
+    letgo: ["Wow. Okay. Noted.", "I thought we were friends.", "The 4 put you up to this."]
+  };
+  function hangText(ms) {
+    var m = Math.max(0, Math.floor(ms / 60000)), h = Math.floor(m / 60);
+    return h + " h " + (m % 60) + " m";
+  }
+
+  return {
+    DAY: DAY, pick: pick, pad: pad,
+        statusNormalize: statusNormalize, incidentScore: incidentScore, dayLabel: dayLabel, clockState: clockState,
+    yearTally: yearTally, view: view, pose: pose, ago: ago, QUIPS: QUIPS, hangText: hangText,
+    BUCKETS: BUCKETS, betResolve: betResolve, betValid: betValid, betNote: betNote, betTeamWinner: betTeamWinner,
+    SQUARES: SQUARES, FREE: FREE, LINES: LINES, bingoDeal: bingoDeal, bingoValid: bingoValid,
+    bingoScore: bingoScore, bingoEmoji: bingoEmoji,
+    G_LANES: G_LANES, G_ROWS: G_ROWS, gameNew: gameNew, gameInterval: gameInterval, gameMove: gameMove,
+    gameSet: gameSet, gameMute: gameMute, gameStep: gameStep, gameCanSpawn: gameCanSpawn, gameResult: gameResult,
+    SENDERS: SENDERS, ticketMake: ticketMake,
+    causePull: causePull, causeSpin: causeSpin,
+    mailSubject: mailSubject, missedCounts: missedCounts
+  };
+})();
+/* The sign, the sky and the 5. Pure maths and string building: no DOM, so jsc can test it and make the share image. */
+var ART364 = (function () {
+  "use strict";
+  // ---- colours: change them here (the page CSS has the same names) ----
+  var C = { sky: "#CDEBDD", ink: "#2B2550", five: "#FF5C7A", four: "#FFC233", white: "#FFFFFF", drop: "#6CC7E6", bird: "#6E6A8F" };
+  var VB_W = 1000, VB_H = 700;            // viewBox of the scene
+  var BEAM_Y = 300, BEAM_H = 30;          // the ledge the numerals stand on
+  var SLOT = [160, 400, 640];             // left edge of each 200-wide numeral
+  var STAND_Y = BEAM_Y - 247;             // top of a numeral that stands on the ledge
+  var STROKE = 50;
+  var SH_L = [75, 14], SH_R = [150, 14];  // shoulders of the 5, in its own 200 x 250 box
+  // Numerals as one fat stroke each, in a 200 x 250 box.
+  var GLYPH = {
+    "3": "M45 35H155L95 110C175 105 180 215 100 218C70 219 50 205 40 185",
+    "6": "M150 28C85 45 45 105 45 160a58 58 0 1 0 116 0a58 58 0 1 0-116 0",
+    "5": "M155 35H65L55 115C95 95 165 105 165 165C165 225 80 235 40 195",
+    "4": "M130 220V35L40 160H170"
+  };
+
+  // ---- grip: five stages a visitor can read at a glance ----
+  // hands: how many hold. len: arm length. rest: angle the body hangs at. max: how far it may swing (degrees).
+  // loose: how freely it swings (0 stiff .. 1 free).
+  var STAGES = [
+    { upTo: 0.15, name: "both hands, whistling", face: "whistle", hands: 2, len: 34, rest: 0, max: 7, loose: 0.25 },
+    { upTo: 0.35, name: "both hands, a bit worried", face: "worried", hands: 2, len: 48, rest: 0, max: 10, loose: 0.4 },
+    { upTo: 0.60, name: "one hand slipping", face: "oh", hands: 1, len: 62, rest: 6, max: 42, loose: 0.7 },
+    { upTo: 0.85, name: "one hand, legs kicking", face: "yell", hands: 1, len: 74, rest: 9, max: 58, loose: 0.85 },
+    { upTo: 9, name: "fingertips, eyes shut", face: "shut", hands: 1, len: 92, rest: 5, max: 70, loose: 1 }
+  ];
+  function stage(p) { for (var i = 0; i < STAGES.length; i++) { if (p < STAGES[i].upTo) { return i; } } return 4; }
+  function grip(s) {
+    var gy = BEAM_Y + BEAM_H - 6 + (s === 4 ? 9 : 0);
+    return { lx: SLOT[2] + SH_L[0], rx: SLOT[2] + SH_R[0], y: gy };
+  }
+  // Where everything is for a hanging 5: angle a (degrees, clockwise), arm stretch e (px), squash q (-0.3..0.3).
+  function rigPose(s, a, e, q) {
+    var st = STAGES[s], g = grip(s), r = a * Math.PI / 180, d = st.len + (e || 0);
+    var sx = g.lx - d * Math.sin(r), sy = g.y + d * Math.cos(r);
+    var bodyA = st.hands === 2 ? a * 0.45 : a, br = bodyA * Math.PI / 180;
+    var kx = 1 - (q || 0) * 0.6, ky = 1 + (q || 0);
+    var out = {
+      body: "translate(" + sx.toFixed(1) + " " + sy.toFixed(1) + ") rotate(" + bodyA.toFixed(2) + ") scale(" + kx.toFixed(3) + " " + ky.toFixed(3) + ") translate(" + (-SH_L[0]) + " " + (-SH_L[1]) + ")",
+      armL: [g.lx, g.y, sx, sy], angle: bodyA, sx: sx, sy: sy
+    };
+    if (st.hands === 2) {
+      var w = (SH_R[0] - SH_L[0]) * kx;
+      out.armR = [g.rx, g.y, sx + w * Math.cos(br), sy + w * Math.sin(br)];
+    }
+    // head centre in scene coordinates, for the eyes and the speech bubble
+    out.hx = sx + 40 * Math.cos(br) - 20 * Math.sin(br);
+    out.hy = sy + 40 * Math.sin(br) + 20 * Math.cos(br);
+    return out;
+  }
+
+  // ---- the sky over the Pacific coast, from the clock ----
+  var LAT = 47.6, LON = -122.33;
+  function sunElevation(ms) {
+    var d = new Date(ms), start = Date.UTC(d.getUTCFullYear(), 0, 1);
+    var day = (ms - start) / 86400000, rad = Math.PI / 180;
+    var decl = -23.44 * Math.cos(2 * Math.PI * (day + 10) / 365) * rad;
+    var b = 2 * Math.PI * (day - 81) / 364, eot = (9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b)) / 60;
+    var solar = ((ms % 86400000) / 3600000 + LON / 15 + eot + 48) % 24;
+    var h = (solar - 12) * 15 * rad, lat = LAT * rad;
+    var el = Math.asin(Math.sin(lat) * Math.sin(decl) + Math.cos(lat) * Math.cos(decl) * Math.cos(h));
+    return { el: el / rad, hour: (solar - 12) * 15 };
+  }
+  function hex(c) { return [parseInt(c.substr(1, 2), 16), parseInt(c.substr(3, 2), 16), parseInt(c.substr(5, 2), 16)]; }
+  function mix(a, b, t) {
+    var x = hex(a), y = hex(b), o = "#", i, v;
+    for (i = 0; i < 3; i++) { v = Math.round(x[i] + (y[i] - x[i]) * t).toString(16); o += v.length < 2 ? "0" + v : v; }
+    return o.toUpperCase();
+  }
+  // Sky colours by sun elevation. Every one keeps the ink text above 4.5:1.
+  var SKY = [[-14, "#8FA4DB"], [-6, "#C3B5E6"], [-1, "#FFD2B5"], [6, "#FFE8B8"], [14, "#CDEBDD"]];
+  function skyAt(ms) {
+    var s = sunElevation(ms), e = s.el, col = SKY[SKY.length - 1][1], i;
+    if (e <= SKY[0][0]) { col = SKY[0][1]; }
+    else { for (i = 1; i < SKY.length; i++) { if (e < SKY[i][0]) { col = mix(SKY[i - 1][1], SKY[i][1], (e - SKY[i - 1][0]) / (SKY[i][0] - SKY[i - 1][0])); break; } } }
+    return {
+      el: e, color: col, night: Math.max(0, Math.min(1, (-e - 3) / 8)),
+      // the sun shows only near the horizon: rising at the right edge, setting at the left
+      sunX: s.hour < 0 ? 962 : 38, sunY: 640 - e * 15, sunUp: e > -4 && e < 12,
+      name: e < -8 ? "night" : e < -1 ? (s.hour < 0 ? "first light" : "dusk") : e < 7 ? (s.hour < 0 ? "sunrise" : "sunset") : "day"
+    };
+  }
+  function luminance(c) {
+    var v = hex(c).map(function (x) { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+    return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+  }
+  function contrast(a, b) { var x = luminance(a), y = luminance(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+
+  // ---- drawing ----
+  function numeral(ch, x, y, color, extra, width) {
+    return '<path d="' + GLYPH[ch] + '" transform="translate(' + x + ' ' + y + ')" fill="none" stroke="' + color + '" stroke-width="' + (width || STROKE) +
+      '" stroke-linecap="round" stroke-linejoin="round"' + (extra || "") + '/>';
+  }
+  function line(d, w, color) {
+    return '<path d="' + d + '" fill="none" stroke="' + (color || C.ink) + '" stroke-width="' + (w || 4) + '" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
+  function drop(x, y, cls) {
+    return '<path class="' + cls + '" d="M' + x + ' ' + y + 'c-7 10-9 14-9 18a9 9 0 0 0 18 0c0-4-2-8-9-18z" fill="' + C.drop + '"/>';
+  }
+  function eyes(y, dx, dy) {
+    return '<g class="blink"><circle cx="98" cy="' + y + '" r="10.5" fill="' + C.white + '"/><circle cx="132" cy="' + y + '" r="10.5" fill="' + C.white + '"/>' +
+      '<g class="pupils" transform="translate(' + dx + ' ' + dy + ')"><circle cx="98" cy="' + y + '" r="4.8" fill="' + C.ink + '"/><circle cx="132" cy="' + y + '" r="4.8" fill="' + C.ink + '"/></g></g>';
+  }
+  // The face sits in the top bar of the 5. Local coordinates of the 200 x 250 box.
+  function face(kind) {
+    var s = '<g class="face">';
+    if (kind === "shut") {
+      s += line("M89 26l12 7l-12 7", 4.5) + line("M141 26l-12 7l12 7", 4.5);
+      s += '<rect x="102" y="46" width="26" height="11" rx="3" fill="' + C.white + '" stroke="' + C.ink + '" stroke-width="3"/>' + line("M111 46v11M119 46v11", 2.5);
+    } else if (kind === "tired") {
+      s += eyes(33, 0, 3) + '<path d="M86 25h24M120 25h24" stroke="' + C.five + '" stroke-width="13"/>' + line("M106 52q9-5 18 0", 4);
+    } else if (kind === "happy") {
+      s += eyes(31, 0, 0) + line("M103 47q12 11 24 0", 4.5);
+    } else {
+      s += eyes(32, kind === "whistle" ? 3 : 0, kind === "whistle" ? 0 : -3);
+      if (kind === "whistle") { s += '<circle cx="118" cy="53" r="5" fill="' + C.ink + '"/>'; }
+      else if (kind === "worried") { s += line("M102 54q6-7 13 0t13 0", 4); }
+      else if (kind === "oh") { s += '<ellipse cx="115" cy="53" rx="7" ry="8" fill="' + C.ink + '"/>'; }
+      else { s += '<ellipse cx="115" cy="52" rx="10" ry="10" fill="' + C.ink + '"/><path d="M108 57q7-6 14 0" fill="none" stroke="' + C.five + '" stroke-width="5"/>'; }
+    }
+    // brows show only while the 5 musters its strength
+    s += '<g class="brows" opacity="0">' + line("M88 17l18 6M142 17l-18 6", 5) + '</g>';
+    return s + '</g>';
+  }
+  function legs() {
+    var p = ' fill="none" stroke="' + C.five + '" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>';
+    return '<g class="legs"><path class="leg a" d="M88 240v30h-14"' + p + '<path class="leg b" d="M128 243v30h14"' + p + '</g>';
+  }
+  function armLine(cls, a) {
+    return '<line class="' + cls + '" x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + a[2].toFixed(1) + '" y2="' + a[3].toFixed(1) +
+      '" stroke="' + C.five + '" stroke-width="14" stroke-linecap="round"/><circle class="' + cls + ' hand" cx="' + a[0].toFixed(1) + '" cy="' + a[1].toFixed(1) + '" r="13" fill="' + C.five + '"/>';
+  }
+  // The 5, hanging from the ledge at grip stage s, swung to angle a.
+  function hanging(s, a) {
+    var st = STAGES[s], p = rigPose(s, a === undefined ? st.rest : a, 0, 0), out = '<g class="five hang s' + s + '">';
+    out += armLine("armL", p.armL);
+    if (p.armR) { out += armLine("armR", p.armR); }
+    out += '<g class="body" transform="' + p.body + '">';
+    if (st.hands === 1) {
+      out += '<g class="armF" transform="rotate(' + (s === 2 ? -52 : 20) + ' 150 16)">' + line("M150 16h56", 14, C.five) + '<circle cx="206" cy="16" r="13" fill="' + C.five + '"/></g>';
+    }
+    out += legs() + numeral("5", 0, 0, C.five) + face(st.face);
+    if (s === 0) { out += '<g class="note" fill="' + C.ink + '"><ellipse cx="214" cy="40" rx="8" ry="6"/><rect x="218" y="8" width="4" height="32"/><path d="M218 8q14 2 16 14q-8-6-16-4z"/></g>'; }
+    if (s >= 2) { out += drop(20, -6, "sweat") + (s >= 3 ? drop(190, 60, "sweat late") : ""); }
+    return out + '</g></g>';
+  }
+  // A numeral standing in the third slot, with a face and props.
+  function standing(kind) {
+    var x = SLOT[2], y = STAND_Y, out = "";
+    if (kind === "four") {
+      out += '<g class="four"><g class="body" transform="translate(' + x + ' ' + y + ')">' + numeral("4", 0, 0, C.four);
+      out += '<g class="blink"><circle cx="118" cy="78" r="10.5" fill="' + C.white + '"/><circle cx="144" cy="78" r="10.5" fill="' + C.white + '"/>' +
+        '<g class="pupils"><circle cx="118" cy="78" r="4.8" fill="' + C.ink + '"/><circle cx="144" cy="78" r="4.8" fill="' + C.ink + '"/></g></g>' + line("M119 96q12 12 24 0", 4.5);
+      out += '<g class="hat"><path d="M130 -62l34 66h-68z" fill="' + C.five + '"/><path d="M113 -30h34M105 -12h50" stroke="' + C.white + '" stroke-width="6"/><circle cx="130" cy="-64" r="11" fill="' + C.ink + '"/></g></g></g>';
+      return out;
+    }
+    var lean = kind === "tired" ? -5 : 0;
+    out += '<g class="five stand ' + kind + '"><g class="body" transform="translate(' + x + ' ' + y + ') rotate(' + lean + ' 100 247)">';
+    out += numeral("5", 0, 0, C.five) + face(kind === "tired" ? "tired" : "happy");
+    if (kind === "coffee") {
+      out += line("M172 30q26 10 30 44", 14, C.five) + '<circle cx="202" cy="76" r="13" fill="' + C.five + '"/>';
+      out += '<path d="M186 82h34v26a10 10 0 0 1-10 10h-14a10 10 0 0 1-10-10z" fill="' + C.white + '"/><path d="M220 90h6a8 8 0 0 1 0 16h-6" fill="none" stroke="' + C.white + '" stroke-width="5"/>';
+      out += '<g class="steam">' + line("M196 72q-6-8 0-16t0-16", 3.5, C.white) + line("M210 72q-6-8 0-16t0-16", 3.5, C.white) + '</g>';
+    } else {
+      out += drop(196, 2, "sweat");
+      out += line("M30 28q-22 8-26 34", 14, C.five) + '<circle cx="4" cy="64" r="13" fill="' + C.five + '"/>';
+      out += '<path d="M4 70V-70" stroke="' + C.ink + '" stroke-width="6" stroke-linecap="round"/><path d="M4 -70h74l-14 22l14 22H4z" fill="' + C.four + '"/>' +
+        '<text x="34" y="-36" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="26" fill="' + C.ink + '">365</text>';
+    }
+    return out + '</g></g>';
+  }
+  function cloud(x, y, k) {
+    return '<path transform="translate(' + x + ' ' + y + ') scale(' + k + ')" d="M0 40a34 34 0 0 1 60-18a26 26 0 0 1 44 18a14 14 0 0 1 0 28H0a14 14 0 0 1 0-28z"/>';
+  }
+  var STARS = [[70, 60], [150, 250], [230, 30], [330, 20], [470, 44], [560, 12], [640, 90], [760, 30], [880, 70], [950, 200], [40, 380], [300, 420], [520, 470], [930, 420], [610, 380], [200, 520]];
+  // Sky things behind the sign. sky comes from skyAt().
+  function backdrop(sky, cut) {
+    var o = "", i, n = sky.night;
+    o += '<g class="stars" fill="' + C.white + '" opacity="' + n.toFixed(2) + '">';
+    for (i = 0; i < STARS.length; i++) { o += '<circle cx="' + STARS[i][0] + '" cy="' + STARS[i][1] + '" r="' + (i % 3 === 0 ? 4 : 2.6) + '"/>'; }
+    o += '</g>';
+    if (n > 0.05) { o += '<g class="moon" opacity="' + n.toFixed(2) + '"><circle cx="62" cy="64" r="34" fill="' + C.white + '"/><circle cx="78" cy="54" r="31" fill="' + sky.color + '"/></g>'; }
+    if (sky.sunUp) { o += '<circle class="sun" cx="' + sky.sunX.toFixed(0) + '" cy="' + sky.sunY.toFixed(0) + '" r="54" fill="' + C.four + '"/>'; }
+    o += '<g class="cl far" fill="' + C.white + '" opacity="' + (0.5 - n * 0.25).toFixed(2) + '">' + cloud(790, 70, 1.25) + cloud(330, 590, 0.9) + '</g>';
+    // far-off offices, one light still on
+    o += '<g class="town"><path d="' + (cut ? "" : "M0 700V640h60v-40h70v60h50v-90h80v70h40v60z") + 'M1000 700V620h-70v-50h-60v70h-50v-30h-70v90z" fill="' + C.ink + '" opacity=".13"/>' +
+      (cut ? "" : '<rect class="lit" x="196" y="590" width="14" height="18" fill="' + C.four + '" opacity="' + (0.25 + n * 0.75).toFixed(2) + '"/>') + '</g>';
+    o += '<g class="cl near" fill="' + C.white + '" opacity="' + (0.7 - n * 0.3).toFixed(2) + '">' + (cut ? "" : cloud(40, 130, 1)) + cloud(560, 520, 0.7) + '</g>';
+    return o;
+  }
+  // A pigeon carrying an envelope. Drawn facing right, origin at its middle.
+  function pigeon() {
+    return '<g class="pigeon" transform="translate(-80 170)"><path d="M-22 0q10-14 30-8l14-6l-4 12q-4 14-24 14q-14 0-16-12z" fill="' + C.bird + '"/>' +
+      '<path class="wing" d="M-8 -2q8-24 22-26q-2 16-10 28z" fill="' + C.ink + '"/><circle cx="14" cy="-9" r="2" fill="' + C.white + '"/>' +
+      '<rect x="20" y="-4" width="20" height="13" rx="2" fill="' + C.white + '"/><path d="M20 -4l10 7l10-7" fill="none" stroke="' + C.ink + '" stroke-width="1.5"/></g>';
+  }
+  // The whole scene. o: { pose: "live"|"party"|"off"|"idle"|"retired", stage, angle, sky, still }
+  function scene(o) {
+    var sky = o.sky || skyAt(Date.UTC(2026, 10, 12, 20, 0, 0)), out = backdrop(sky, o.cut);
+    out += '<rect x="112" y="' + BEAM_Y + '" width="26" height="' + (VB_H - BEAM_Y) + '" fill="' + C.ink + '"/><rect x="884" y="' + BEAM_Y + '" width="26" height="' + (VB_H - BEAM_Y) + '" fill="' + C.ink + '"/>';
+    out += numeral("3", SLOT[0], STAND_Y, C.ink) + numeral("6", SLOT[1], STAND_Y, C.ink);
+    // the empty place where the 5 belongs
+    if (o.pose === "live") { out += '<g class="gap">' + numeral("5", SLOT[2], STAND_Y, C.ink, ' opacity=".28"') + numeral("5", SLOT[2], STAND_Y, sky.color, ' class="gapfill"', STROKE - 9) + '</g>'; }
+    out += '<rect x="60" y="' + BEAM_Y + '" width="880" height="' + BEAM_H + '" rx="8" fill="' + C.ink + '"/>';
+    if (!o.still) { out += pigeon(); }
+    if (o.pose === "live") { out += hanging(o.stage || 0, o.angle); }
+    else if (o.pose === "party" || o.pose === "retired") { out += standing("four"); }
+    else if (o.pose === "off") { out += standing("tired"); }
+    else { out += standing("coffee"); }
+    return out;
+  }
+  // The ground, far below: the office is ready either way. landed: the 5 is on the mattress.
+  function ground(landed) {
+    var o = "", I = C.ink;
+    function person(x, shirt, armUp) {
+      return '<g transform="translate(' + x + ' 0)"><circle cx="0" cy="196" r="17" fill="' + I + '"/><path d="M-20 300v-58a20 20 0 0 1 40 0v58z" fill="' + shirt + '"/>' +
+        (armUp ? '<path d="M14 236l22-44" stroke="' + shirt + '" stroke-width="11" stroke-linecap="round"/>' : "") + '</g>';
+    }
+    o += '<rect x="112" y="0" width="26" height="300" fill="' + I + '"/><rect x="884" y="0" width="26" height="300" fill="' + I + '"/>';
+    o += '<path d="M170 60V300M560 60V300" stroke="' + I + '" stroke-width="7"/><path d="M170 66h390v74l-24-14l-24 14l-24-14l-24 14l-24-14l-24 14l-24-14l-24 14l-24-14l-24 14l-24-14l-24 14l-24-14l-24 14l-24-14l-30 14z" fill="' + C.four + '"/>' +
+      '<text x="365" y="118" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="46" fill="' + I + '">364</text>';
+    o += person(230, C.white, true) + person(300, C.five, false) + person(500, C.white, true);
+    o += '<rect x="356" y="262" width="96" height="38" fill="' + I + '"/><rect x="372" y="232" width="64" height="30" rx="4" fill="' + C.white + '"/><rect x="384" y="210" width="40" height="22" rx="4" fill="' + C.five + '"/><path d="M404 210v-16" stroke="' + I + '" stroke-width="4"/><circle cx="404" cy="190" r="5" fill="' + C.four + '"/>';
+    o += '<rect x="640" y="262" width="220" height="38" rx="14" fill="' + C.white + '"/><path d="M680 262v38M740 262v38M800 262v38" stroke="' + C.drop + '" stroke-width="5"/>';
+    if (landed) {
+      o += '<g transform="translate(700 150) rotate(74 100 125) scale(.62)">' + numeral("5", 0, 0, C.five) + face("happy") + '</g>';
+    }
+    o += '<rect x="0" y="300" width="1000" height="60" fill="' + I + '"/>';
+    return o;
+  }
+
+  // ---- the postcard: the scene plus the words, as one SVG. fmt "wide" (1200 x 630) or "tall" (1080 x 1350). ----
+  function wrapText(s, n) {
+    var w = String(s).split(" "), out = [], cur = "", i;
+    for (i = 0; i < w.length; i++) {
+      if (cur && (cur + " " + w[i]).length > n) { out.push(cur); cur = w[i]; } else { cur = cur ? cur + " " + w[i] : w[i]; }
+    }
+    if (cur) { out.push(cur); }
+    return out;
+  }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function postcard(fmt, d) {
+    var tall = fmt === "tall", W = tall ? 1080 : 1200, H = tall ? 1350 : 630, sky = d.sky, F = "Avenir Next Condensed,Roboto Condensed,Arial Narrow,Helvetica Neue,Arial,sans-serif",
+      T = "Avenir Next,Segoe UI,Helvetica Neue,Arial,sans-serif", o = "", I = C.ink;
+    o += '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '"><rect width="' + W + '" height="' + H + '" fill="' + sky.color + '"/>';
+    var sc = scene({ pose: d.pose, stage: d.stage, sky: sky, still: true, cut: !tall });
+    function text(x, y, size, s, fam, weight, anchor) {
+      return '<text x="' + x + '" y="' + y + '" font-family="' + (fam || T) + '" font-weight="' + (weight || 400) + '" font-size="' + size + '"' + (anchor ? ' text-anchor="' + anchor + '"' : "") + ' fill="' + I + '">' + esc(s) + '</text>';
+    }
+    function tag(x, y, s) {
+      var w = s.length * 15.5 + 44;
+      return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="54" rx="27" fill="' + (d.team === "4" ? C.four : C.five) + '"/>' + text(x + w / 2, y + 37, 29, s, F, 700, "middle");
+    }
+    if (tall) {
+      o += text(70, 110, 46, "Is it 364 yet?", F, 700) + text(64, 300, d.answer.length > 14 ? 124 : d.answer.length > 9 ? 168 : 210, d.answer, F, 700);
+      o += '<svg x="40" y="330" width="1000" height="700" viewBox="0 0 1000 700">' + sc + '</svg>';
+      var tl = wrapText(d.line1, 40), ty = 1086, tk;
+      for (tk = 0; tk < tl.length; tk++) { o += text(70, ty, 40, tl[tk], T, 700); ty += 50; }
+      tl = wrapText(d.line2, 52).slice(0, 2);
+      for (tk = 0; tk < tl.length; tk++) { o += text(70, ty, 33, tl[tk], T, 400); ty += 42; }
+      if (d.team) { o += tag(70, Math.min(ty - 8, 1210), "I'm on Team " + d.team); }
+      o += text(1010, 1296, 34, "isit364yet.com", F, 700, "end") + text(70, 1296, 22, "Parody. Not affiliated with Microsoft.", T, 400);
+    } else {
+      o += '<svg x="470" y="20" width="820" height="574" viewBox="60 0 1000 700">' + sc + '</svg>';
+      o += text(64, 96, 40, "Is it 364 yet?", F, 700) + text(58, 236, d.answer.length > 9 ? 84 : 132, d.answer, F, 700);
+      var ls = wrapText(d.line1, 27), y = 322, k;
+      for (k = 0; k < ls.length; k++) { o += text(64, y, 27, ls[k], T, 700); y += 36; }
+      ls = wrapText(d.line2, 30);
+      for (k = 0; k < ls.length; k++) { o += text(64, y + 4, 24, ls[k], T, 400); y += 32; }
+      if (d.team) { o += tag(64, y + 12, "I'm on Team " + d.team); }
+      o += text(64, 560, 32, "isit364yet.com", F, 700) + text(64, 596, 19, "Parody. Not affiliated with Microsoft.", T, 400);
+    }
+    return o + '</svg>';
+  }
+  // Tab icon: the 5 while it hangs on, the 4 once it has fallen.
+  function favicon(ch, sky) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -15 240 280"><rect x="-20" y="-15" width="240" height="280" rx="50" fill="' + (sky || C.sky) + '"/>' + numeral(ch, 0, 0, ch === "4" ? C.four : C.five) + '</svg>';
+  }
+  return { C: C, VB_W: VB_W, VB_H: VB_H, SLOT: SLOT, BEAM_Y: BEAM_Y, BEAM_H: BEAM_H, STAND_Y: STAND_Y, GLYPH: GLYPH, STAGES: STAGES,
+           stage: stage, grip: grip, rigPose: rigPose, sunElevation: sunElevation, skyAt: skyAt, mix: mix, contrast: contrast, SKY: SKY,
+           scene: scene, ground: ground, postcard: postcard, wrapText: wrapText, favicon: favicon, numeral: numeral };
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var L = M364, A = ART364;
+
+  // ---- Built-in fallback, used only when status.json does not load -----------
+  // Start of the outage. 8:17 AM PST on 2026-11-12 is 16:17 UTC (Microsoft's stated start for EX1550543).
+  var OUTAGE_START = Date.UTC(2026, 10, 12, 16, 17, 0);
+  // Set this by hand only if status.json is gone and the outage is over, e.g. Date.UTC(2026, 10, 13, 6, 30, 0).
+  var OUTAGE_END = null;
+  // ----------------------------------------------------------------------------
+
+  // ---- feel: change these to tune the 5 ---------------------------------------
+  var SWING_STIFF = 62, SWING_FREE = 17;   // pull back to rest: two hands .. fingertips (1/s^2)
+  var DAMP_STIFF = 3.2, DAMP_FREE = 0.55;  // how fast a swing dies (1/s)
+  var WIND = 7;                            // idle sway
+  var STRETCH_K = 240, STRETCH_D = 15;     // arm spring
+  var SQUASH_K = 320, SQUASH_D = 13;       // squash and stretch spring
+  var COMPLAIN_SPEED = 240;                // degrees per second that earns a complaint
+  var FEED_MS = 2600;
+  var CONFETTI = ["#FFC233", "#FF5C7A", "#FFFFFF", "#2B2550", "#6CC7E6"];
+  // ----------------------------------------------------------------------------
+
+  var DAY = L.DAY, HOUR = 3600000;
+  function mq(s) { return !!(window.matchMedia && window.matchMedia(s).matches); }
+  var RM = mq("(prefers-reduced-motion: reduce)");
+  function $(id) { return document.getElementById(id); }
+  function iso(ms) { return new Date(ms).toISOString(); }
+  function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function setText(el, s) { if (el.textContent !== s) { el.textContent = s; } }
+  // A haptic tick, only where the browser has one and the visitor has already touched the page.
+  function buzz(ms) {
+    var ua = navigator.userActivation;
+    if (!navigator.vibrate || (ua && !ua.hasBeenActive)) { return; }
+    try { navigator.vibrate(ms); } catch (e) {}
+  }
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  var HERE = location.origin + location.pathname;
+  function now() { return Date.now(); }
+
+  // ---- the scorekeeper model --------------------------------------------------
+  var q = new URLSearchParams(location.search).get("test");
+  function testModel(name) {
+    var n = Date.now(), day = function (ms) { return iso(ms).slice(0, 10); };
+    var inc = function (endAgo, hours, made) {
+      return { id: day(n - endAgo - hours * HOUR), start: iso(n - endAgo - hours * HOUR), end: iso(n - endAgo), hours: hours, made364: !!made };
+    };
+    var j = { v: 2, checked: iso(n - 4 * 60000), status: "Operational", tracking_since: "2026-11-12", current: null, incidents: [] };
+    if (name === "party") { j.status = "Service degradation"; j.current = { id: day(n - DAY), start: iso(n - DAY - 5000) }; }
+    else if (name === "soon") { j.status = "Service degradation"; j.current = { id: day(n - DAY), start: iso(n - DAY + 8000) }; }
+    else if (name === "off") { j.incidents = [inc(60000, 13.4)]; }
+    else if (name === "idle") { j.incidents = [inc(23 * DAY + 2 * HOUR, 3.2), inc(40 * DAY, 14.4)]; }
+    else if (name === "year364") { j.incidents = [inc(5 * DAY + HOUR, 6.5), inc(20 * DAY, 9.1), inc(40 * DAY, 14.4)]; }
+    else { return null; }
+    return j;
+  }
+  var MODEL = L.statusNormalize((q && testModel(q)) || { start: iso(OUTAGE_START), end: OUTAGE_END === null ? null : iso(OUTAGE_END) });
+  var V = L.view(MODEL, now());
+
+  function clock(ms) {
+    try {
+      return new Intl.DateTimeFormat(undefined, { weekday: "long", hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(new Date(ms));
+    } catch (e) { return new Date(ms).toString(); }
+  }
+  function hm(ms) {
+    try { return new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(new Date(ms)); }
+    catch (e) { return ""; }
+  }
+  function applyStatus(j) {
+    var m = L.statusNormalize(j);
+    if (!m) { return; }
+    MODEL = m;
+    modelChanged();
+  }
+  function poll() {
+    if (q || !window.fetch) { return; }
+    fetch("status.json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(applyStatus)
+      .catch(function () {});
+  }
+
+  // ---- sound: off until the switch says otherwise ------------------------------
+  var soundOn = false, AC = null;
+  function tone(type, f0, f1, dur, vol, delay) {
+    if (!soundOn) { return; }
+    try {
+      AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") { AC.resume(); }
+      var o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime + (delay || 0);
+      o.type = type; o.frequency.setValueAtTime(f0, t);
+      if (f1 !== f0) { o.frequency.exponentialRampToValueAtTime(f1, t + dur); }
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+      o.connect(g); g.connect(AC.destination);
+      o.start(t); o.stop(t + dur + 0.02);
+    } catch (e) {}
+  }
+  function beep(f, d, delay) { tone("square", f, f, d, 0.035, delay); }
+  var SND = {
+    creak: function () { tone("sawtooth", 130, 84, 0.16, 0.03); },
+    yelp: function () { tone("square", 620, 1180, 0.13, 0.04); },
+    oh: function () { tone("triangle", 520, 300, 0.4, 0.06); },
+    horn: function () { tone("sawtooth", 392, 392, 0.14, 0.05); tone("sawtooth", 523, 523, 0.14, 0.05, 0.16); tone("sawtooth", 659, 784, 0.5, 0.05, 0.32); },
+    thud: function () { tone("sine", 150, 50, 0.22, 0.12); }
+  };
+  $("snd").addEventListener("click", function () {
+    soundOn = !soundOn;
+    this.setAttribute("aria-checked", soundOn ? "true" : "false");
+    this.textContent = soundOn ? "Sound: on" : "Sound: off";
+    if (soundOn) { beep(1320, 0.06); beep(1760, 0.09, 0.08); }
+  });
+
+  // ---- copy and say ------------------------------------------------------------
+  function say(msg) {
+    var el = $("said");
+    el.textContent = msg;
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.textContent = ""; }, 4000);
+  }
+  function copy(text, quiet) {
+    var ok = function () { if (!quiet) { say("Copied. Paste it somewhere that still works."); } };
+    var no = function () { if (!quiet) { say("Your browser blocked the copy. Select the text and copy it by hand."); } };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(ok, no); }
+    else { no(); }
+  }
+  function announce(msg) { $("alt").textContent = msg; }
+  // Run a change as one view transition where the browser can.
+  function vt(fn) {
+    if (!RM && document.startViewTransition && document.visibilityState === "visible") { var tr = null; try { tr = document.startViewTransition(fn); } catch (e) { tr = null; fn(); return; } if (tr) { [tr.ready, tr.finished, tr.updateCallbackDone].forEach(function (p) { if (p && p.catch) { p.catch(function () {}); } }); } return; }
+    fn();
+  }
+
+  // =============================================================================
+  // The scene: sky, sign and the 5. Rebuilt only when the pose, grip or sky changes.
+  // =============================================================================
+  var art = $("art"), sign = $("sign"), bubble = $("bubble");
+  var pose = "", stageNow = 0, previewH = null, sceneKey = "", busy = false, P = {};
+  function sceneTime() { return previewH !== null && MODEL.current ? MODEL.current.start + previewH * HOUR : now(); }
+  function stageWanted() {
+    if (!MODEL.current) { return 0; }
+    return A.stage(previewH !== null ? previewH / 24 : V.c.frac);
+  }
+  function renderScene(force) {
+    if (busy) { return; }
+    var sky = A.skyAt(sceneTime()), p = L.pose(V), s = p === "live" ? stageWanted() : 0;
+    var key = p + "|" + s + "|" + sky.color + "|" + sky.night.toFixed(1) + "|" + (sky.sunUp ? Math.round(sky.sunY / 4) : "");
+    if (key === sceneKey && !force) { return; }
+    var rebuilt = p !== pose || s !== stageNow, first = pose === "";
+    sceneKey = key; pose = p; stageNow = s;
+    document.documentElement.style.setProperty("--sky", sky.color);
+    if (p === "live" && (pose === "" || RM)) { rig.th = A.STAGES[s].rest; }
+    art.innerHTML = A.scene({ pose: p, stage: s, sky: sky, angle: rig.th, still: RM });
+    sign.classList.toggle("up", p !== "live");
+    $("poke").setAttribute("aria-label", p === "party" || p === "retired" ? "Poke the 4" : "Poke the 5");
+    grab();
+    if (rebuilt) {
+      rig.e = 0; rig.mode = p === "live" ? "hang" : "stand";
+      if (p !== "live") { rig.th = 0; rig.om = 0; }
+      else if (first || RM) { rig.th = A.STAGES[s].rest; }
+    }
+    applyRig(0);
+  }
+  function grab() {
+    var one = function (s) { return art.querySelector(s); };
+    P = { body: one(".hang .body") || one(".stand .body") || one(".four .body"), armL: one("line.armL"), armR: one("line.armR"),
+          pupils: one(".pupils"), legA: one(".leg.a"), legB: one(".leg.b"), armF: one(".armF"), brows: one(".brows"),
+          pigeon: one(".pigeon"), wing: one(".wing"), near: one(".cl.near"), far: one(".cl.far") };
+    P.base = P.body ? P.body.getAttribute("transform") : "";
+  }
+
+  // ---- the rig: a pendulum with a springy arm ----
+  var rig = { mode: "hang", th: 0, om: 0, e: 0, ev: 0, q: 0, qv: 0, tilt: 0, drag: false, grab: 0, dist0: 0, target: 0, eT: 0,
+              muster: false, eyeX: 0, eyeY: 0, roll: 0, lastSide: 0, complainAt: 0, px: 0, py: 0, vy: 0, vx: 0, spin: 0, y: 0, t: 0 };
+  var pointer = { x: 500, y: 200, at: 0 };
+  function toScene(cx, cy) {
+    var r = art.getBoundingClientRect();
+    return { x: (cx - r.left) / (r.width || 1) * A.VB_W, y: (cy - r.top) / (r.height || 1) * A.VB_H };
+  }
+  function stepRig(dt) {
+    var st = A.STAGES[stageNow], rest = st.rest + rig.tilt * st.loose;
+    rig.t += dt;
+    if (rig.mode === "hang") {
+      var k = SWING_STIFF + (SWING_FREE - SWING_STIFF) * st.loose, d = DAMP_STIFF + (DAMP_FREE - DAMP_STIFF) * st.loose;
+      var acc = -k * (rig.th - rest) - d * rig.om + WIND * st.loose * 6 * Math.sin(rig.t * 0.9) + WIND * Math.sin(rig.t * 0.37);
+      if (rig.drag) {
+        acc += (rig.target - rig.th) * 160 - rig.om * 14;
+      }
+      if (rig.muster) { acc -= rig.om * 6 + (rig.th - rest) * 60; }
+      rig.om += acc * dt; rig.th += rig.om * dt;
+      var lo = rest - st.max, hi = rest + st.max;
+      if (rig.th < lo || rig.th > hi) {
+        rig.th = clamp(rig.th, lo, hi);
+        if (Math.abs(rig.om) > 60) { rig.qv += 2.2; SND.thud(); complain("bump"); }
+        rig.om = -rig.om * 0.45;
+      }
+      var side = rig.th > rest ? 1 : -1;
+      if (side !== rig.lastSide) { if (Math.abs(rig.om) > 55) { SND.creak(); } rig.lastSide = side; }
+      if (Math.abs(rig.om) > COMPLAIN_SPEED) { complain("swing"); }
+      var eT = rig.muster ? -16 : rig.drag ? rig.eT : 0;
+      rig.ev += (-STRETCH_K * (rig.e - eT) - STRETCH_D * rig.ev) * dt; rig.e += rig.ev * dt;
+    } else if (rig.mode === "fall") {
+      rig.vy += 2100 * dt; rig.py += rig.vy * dt; rig.px += rig.vx * dt; rig.th += rig.spin * dt;
+      if (rig.py > A.VB_H + 320) { fallDone(); }
+    } else if (rig.mode === "arrive") {
+      rig.vy += 2400 * dt; rig.y += rig.vy * dt;
+      if (rig.y >= 0) {
+        rig.y = 0;
+        if (rig.vy > 260) { rig.qv -= rig.vy * 0.004; SND.thud(); }
+        rig.vy = -rig.vy * 0.32;
+        if (Math.abs(rig.vy) < 70) { rig.vy = 0; rig.mode = "stand"; }
+      }
+    }
+    rig.qv += (-SQUASH_K * rig.q - SQUASH_D * rig.qv) * dt; rig.q = clamp(rig.q + rig.qv * dt, -0.3, 0.3);
+    if (rig.roll > 0) { rig.roll = Math.max(0, rig.roll - dt); }
+  }
+  function applyRig(dt) {
+    if (!P.body) { return; }
+    var p, ang = 0, hx, hy;
+    if (rig.mode === "hang" && pose === "live") {
+      var shake = stageNow === 4 ? Math.sin(rig.t * 43) * 0.5 : rig.muster ? Math.sin(rig.t * 55) * 0.7 : 0;
+      p = A.rigPose(stageNow, rig.th + shake, rig.e, rig.q);
+      P.body.setAttribute("transform", p.body);
+      if (P.armL) { P.armL.setAttribute("x2", p.armL[2].toFixed(1)); P.armL.setAttribute("y2", p.armL[3].toFixed(1)); }
+      if (P.armR && p.armR) { P.armR.setAttribute("x2", p.armR[2].toFixed(1)); P.armR.setAttribute("y2", p.armR[3].toFixed(1)); }
+      var lag = clamp(-rig.om * 0.07, -38, 38), kick = stageNow >= 3 ? Math.sin(rig.t * 9) * 20 : 0;
+      if (P.legA) { P.legA.setAttribute("transform", "rotate(" + (lag + kick).toFixed(1) + " 88 240)"); P.legB.setAttribute("transform", "rotate(" + (lag - kick).toFixed(1) + " 128 243)"); }
+      if (P.armF) { P.armF.setAttribute("transform", "rotate(" + ((stageNow === 2 ? -52 : 20) + clamp(-rig.om * 0.09, -40, 40) + Math.sin(rig.t * 3.1) * 7).toFixed(1) + " 150 16)"); }
+      if (P.brows) { P.brows.setAttribute("opacity", rig.muster ? "1" : "0"); }
+      ang = p.angle; hx = p.hx; hy = p.hy;
+    } else if (rig.mode === "fall") {
+      P.body.setAttribute("transform", "translate(" + rig.px.toFixed(1) + " " + rig.py.toFixed(1) + ") rotate(" + rig.th.toFixed(1) + ") translate(-75 -14)");
+      hx = rig.px; hy = rig.py;
+    } else {
+      var breathe = RM ? 0 : Math.sin(rig.t * 1.7) * 0.012;
+      P.body.setAttribute("transform", "translate(0 " + rig.y.toFixed(1) + ") " + P.base + " translate(100 247) scale(" + (1 - rig.q * 0.6).toFixed(3) + " " + (1 + rig.q + breathe).toFixed(3) + ") translate(-100 -247)");
+      hx = A.SLOT[2] + 115; hy = A.STAND_Y + 40;
+    }
+    if (P.pupils) {
+      var tx = 0, ty = 0;
+      if (rig.roll > 0) { tx = Math.cos(rig.roll * 9) * 4; ty = Math.sin(rig.roll * 9) * 4; }
+      else if (Date.now() - pointer.at < 6000) {
+        var dx = pointer.x - hx, dy = pointer.y - hy, r = -ang * Math.PI / 180, n = Math.sqrt(dx * dx + dy * dy) || 1;
+        var lx = (dx * Math.cos(r) - dy * Math.sin(r)) / n, ly = (dx * Math.sin(r) + dy * Math.cos(r)) / n, m = Math.min(4.2, n / 30);
+        tx = lx * m; ty = ly * m;
+      } else if (pose === "live") { ty = -3; }
+      var f = dt ? Math.min(1, dt * 12) : 1;
+      rig.eyeX += (tx - rig.eyeX) * f; rig.eyeY += (ty - rig.eyeY) * f;
+      P.pupils.setAttribute("transform", "translate(" + rig.eyeX.toFixed(2) + " " + rig.eyeY.toFixed(2) + ")");
+    }
+  }
+  // ---- the rest of the sky: clouds drift and follow the pointer, a pigeon passes ----
+  var par = { x: 0, tx: 0 }, bird = { at: 9, x: -90, on: false };
+  function stepSky(dt) {
+    par.x += (par.tx - par.x) * Math.min(1, dt * 3);
+    var drift = Math.sin(rig.t * 0.05) * 46;
+    if (P.near) { P.near.setAttribute("transform", "translate(" + (drift + par.x * 16).toFixed(1) + " 0)"); }
+    if (P.far) { P.far.setAttribute("transform", "translate(" + (-drift * 0.5 + par.x * 7).toFixed(1) + " 0)"); }
+    if (!P.pigeon) { return; }
+    if (!bird.on && rig.t > bird.at) { bird.on = true; bird.x = -90; bird.y = 120 + Math.random() * 120; }
+    if (bird.on) {
+      bird.x += 125 * dt;
+      P.pigeon.setAttribute("transform", "translate(" + bird.x.toFixed(1) + " " + (bird.y + Math.sin(rig.t * 3) * 10).toFixed(1) + ")");
+      if (P.wing) { P.wing.setAttribute("transform", "scale(1 " + Math.sin(rig.t * 16).toFixed(2) + ")"); }
+      if (bird.x > A.VB_W + 90) { bird.on = false; bird.at = rig.t + 45 + Math.random() * 40; }
+    }
+  }
+
+  // ---- talking ----
+  var bubbleT = 0;
+  function speak(text, ms) {
+    bubble.textContent = text;
+    bubble.hidden = false;
+    clearTimeout(bubbleT);
+    bubbleT = setTimeout(function () { bubble.hidden = true; }, ms || 3400);
+  }
+  var QUIP_SWING = ["Wheee. No. Stop.", "I get motion sick!", "This is not helping!", "Gently. GENTLY.", "I am not a wind chime."];
+  var QUIP_BUMP = ["Ow.", "That was the post.", "Careful!"];
+  function complain(kind) {
+    var t = Date.now();
+    if (t - rig.complainAt < 3800) { return; }
+    rig.complainAt = t;
+    speak(L.pick(kind === "bump" ? QUIP_BUMP : QUIP_SWING));
+    SND.yelp();
+  }
+  function quipKind() { return pose === "live" ? "live" : pose === "off" ? "off" : pose === "idle" ? "idle" : "four"; }
+  function poke() {
+    if (busy) { return; }
+    speak(L.pick(L.QUIPS[quipKind()]));
+    rig.qv += 2.6;
+    if (rig.mode === "hang") { rig.om += (Math.random() < 0.5 ? -1 : 1) * (60 + 140 * A.STAGES[stageNow].loose); }
+    buzz(12);
+    SND.yelp();
+    wake();
+  }
+  // drag and flick
+  (function () {
+    var el = $("poke"), moved = 0, sx = 0, sy = 0, down = false;
+    function aim(e) {
+      var p = toScene(e.clientX, e.clientY), g = A.grip(stageNow);
+      var a = Math.atan2(-(p.x - g.lx), Math.max(20, p.y - g.y)) * 180 / Math.PI, d = Math.sqrt(Math.pow(p.x - g.lx, 2) + Math.pow(p.y - g.y, 2));
+      return { a: a, d: d };
+    }
+    el.addEventListener("pointerdown", function (e) {
+      if (e.button || busy) { return; }
+      down = true; moved = 0; sx = e.clientX; sy = e.clientY;
+      if (rig.mode === "hang" && !RM) {
+        var m = aim(e), st = A.STAGES[stageNow];
+        rig.drag = true; rig.grab = m.a - rig.th; rig.dist0 = m.d; rig.target = rig.th; rig.eT = 0;
+        rig.max = st.max;
+        try { el.setPointerCapture(e.pointerId); } catch (x) {}
+      }
+      wake();
+    });
+    el.addEventListener("pointermove", function (e) {
+      if (!down) { return; }
+      moved = Math.max(moved, Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy));
+      if (rig.drag) {
+        var m = aim(e), st = A.STAGES[stageNow];
+        rig.target = clamp(m.a - rig.grab, st.rest - st.max, st.rest + st.max);
+        rig.eT = clamp((m.d - rig.dist0) * 0.5, -6, 10 + 16 * st.loose);
+      }
+    });
+    function up() { down = false; rig.drag = false; }
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+    el.addEventListener("click", function () {
+      if (moved > 10) { moved = 0; if (Math.abs(rig.om) > 80) { complain("swing"); } return; }
+      poke();
+    });
+  })();
+  window.addEventListener("pointermove", function (e) {
+    var p = toScene(e.clientX, e.clientY);
+    pointer.x = p.x; pointer.y = p.y; pointer.at = Date.now();
+    par.tx = clamp((e.clientX / (window.innerWidth || 1)) * 2 - 1, -1, 1);
+  }, { passive: true });
+  window.addEventListener("pointerdown", function (e) {
+    var p = toScene(e.clientX, e.clientY);
+    pointer.x = p.x; pointer.y = p.y; pointer.at = Date.now();
+  }, { passive: true });
+
+  // ---- tilt and shake, only after the visitor asks for it ----
+  (function () {
+    var btn = $("tilt-btn");
+    if (RM || !("DeviceOrientationEvent" in window) || !mq("(pointer: coarse)")) { return; }
+    btn.hidden = false;
+    var on = false, shakeAt = 0;
+    function start() {
+      if (on) { return; }
+      on = true; btn.textContent = "Tilt is on. Tip your phone."; btn.setAttribute("aria-pressed", "true");
+      window.addEventListener("deviceorientation", function (e) {
+        if (typeof e.gamma !== "number") { return; }
+        rig.tilt = clamp(-e.gamma * 0.9, -45, 45); par.tx = clamp(e.gamma / 30, -1, 1);
+      });
+      window.addEventListener("devicemotion", function (e) {
+        var a = e.acceleration;
+        if (!a || a.x === null) { return; }
+        var mag = Math.abs(a.x) + Math.abs(a.y) + Math.abs(a.z || 0);
+        if (mag > 22 && Date.now() - shakeAt > 900) {
+          shakeAt = Date.now(); rig.om += (a.x > 0 ? 1 : -1) * 260; rig.qv += 2; complain("swing");
+          buzz(20);
+        }
+      });
+      wake();
+    }
+    btn.addEventListener("click", function () {
+      var D = window.DeviceOrientationEvent, M = window.DeviceMotionEvent;
+      if (D && typeof D.requestPermission === "function") {
+        D.requestPermission().then(function (r) {
+          if (r !== "granted") { btn.textContent = "Tilt was not allowed"; return; }
+          if (M && typeof M.requestPermission === "function") { M.requestPermission().then(start, start); } else { start(); }
+        }, function () { btn.textContent = "Tilt was not allowed"; });
+      } else { start(); }
+    });
+  })();
+
+  // ---- the fall, and the 4 ----
+  function startFall() {
+    if (RM || !heroSeen || document.hidden || rig.mode !== "hang" || !P.body) { return false; }
+    busy = true;
+    speak("Oh no.", 1500); SND.oh();
+    rig.muster = false; rig.drag = false;
+    setTimeout(function () {
+      var p = A.rigPose(stageNow, rig.th, rig.e, 0), list = art.querySelectorAll(".armL, .armR"), i;
+      for (i = 0; i < list.length; i++) { list[i].parentNode.removeChild(list[i]); }
+      P.armL = P.armR = null;
+      rig.mode = "fall"; rig.px = p.sx; rig.py = p.sy; rig.vy = -260; rig.vx = -rig.om * 0.8; rig.spin = 150 + rig.om;
+      bubble.hidden = true;
+      wake();
+    }, 750);
+    return true;
+  }
+  function fallDone() {
+    busy = false;
+    rig.th = 0; rig.om = 0;
+    renderScene(true);
+    arrive();
+    drawGround();
+  }
+  function arrive() {
+    if (RM) { return; }
+    rig.mode = "arrive"; rig.y = -620; rig.vy = 0;
+    applyRig(0);
+    setTimeout(function () { confetti(pose === "party" && V.state === "party" ? 12000 : 5000); SND.horn(); speak(L.pick(L.QUIPS.four)); }, 650);
+    wake();
+  }
+
+  // ---- one loop for everything that moves; it sleeps when nothing is on screen ----
+  var rafId = 0, lastTs = 0, heroSeen = true, gameSeen = false;
+  function frame(ts) {
+    rafId = 0;
+    var dt = Math.min(0.034, (ts - lastTs) / 1000 || 0.016);
+    lastTs = ts;
+    if (heroSeen && !RM) { stepRig(dt); applyRig(dt); stepSky(dt); stepScrub(dt); }
+    if (gameSeen) { gameFrame(ts); }
+    wake();
+  }
+  function wake() {
+    if (rafId || document.hidden) { return; }
+    if (!(heroSeen && !RM) && !(gameSeen && (gRunning() || gDirty))) { return; }
+    rafId = requestAnimationFrame(frame);
+  }
+  if (window.IntersectionObserver) {
+    new IntersectionObserver(function (es) { heroSeen = es[es.length - 1].isIntersecting; wake(); }).observe(sign);
+    new IntersectionObserver(function (es) { gameSeen = es[es.length - 1].isIntersecting; wake(); }).observe($("game"));
+  } else { gameSeen = true; }
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) { lastTs = performance.now(); gNext = Date.now() + 600; tick(); wake(); }
+  });
+
+  // =============================================================================
+  // Words under the sign, the teams, the scrubber
+  // =============================================================================
+  var shownPose = "", shown364 = false, lastIcon = "";
+  function leadSet(bold, rest) {
+    var el = $("lead"), key = bold + "|" + rest;
+    if (el._k === key) { return; }
+    el._k = key; el.textContent = "";
+    var b = document.createElement("b"); b.textContent = bold;
+    el.appendChild(b); el.appendChild(document.createTextNode(" " + rest));
+  }
+  function stat(n, a, b) { setText($("n" + n), a); setText($("n" + n + "l"), b); }
+  function tallyText() {
+    return V.year + " so far: " + V.tally.toFixed(4) + " days, with outages tracked here since " + L.dayLabel(MODEL.since) + ".";
+  }
+  function answerFor(p) {
+    return p === "live" ? "Not yet." : p === "party" ? "Yes." : p === "off" ? "No. The 5 made it." : p === "retired" ? "Yes, all year." : "Not today.";
+  }
+  function words() {
+    var p = L.pose(V), last = V.last, live = p === "live";
+    setText($("answer"), answerFor(p));
+    $("answer").classList.toggle("long", answerFor(p).length > 10);
+    $("plaque").hidden = !(p === "idle" && V.daysSince >= 0);
+    $("teams").hidden = !live;
+    $("scrub-box").hidden = !live;
+    if (live) {
+      leadSet("The 5 has been hanging on for " + L.hangText(V.c.downMs) + ".", "It has to last until " + clock(V.c.target) + ".");
+      stat(1, V.count.toFixed(4), "days, and falling"); stat(2, V.c.hms, "until 364 is official");
+      setText($("nums"), V.year + " so far: " + V.tally.toFixed(2) + " days.");
+    } else if (V.state === "party") {
+      leadSet("The 5 let go after one full day.", "365 is now 364. The 4 brought its own hat.");
+      stat(1, "364.0000", "days. It is official."); stat(2, L.hangText(V.c.downMs), "down so far");
+      setText($("nums"), V.year + " so far: " + V.tally.toFixed(2) + ".");
+    } else if (p === "party") {
+      leadSet("The 5 fell.", "The outage of " + L.dayLabel(last.id) + " lasted " + last.hours.toFixed(1) + " hours. All clear now.");
+      stat(1, V.tally.toFixed(4), V.year + " so far"); stat(2, last.hours.toFixed(1) + " h", "the outage lasted");
+      setText($("nums"), "");
+    } else if (p === "off") {
+      leadSet("365 stands.", "Final score " + L.incidentScore(last.hours).toFixed(2) + ", down " + last.hours.toFixed(1) + " hours. The 5 climbed back up and would like a minute.");
+      stat(1, L.incidentScore(last.hours).toFixed(2), "final score"); stat(2, last.hours.toFixed(1) + " h", "it held on");
+      setText($("nums"), V.year + " so far: " + V.tally.toFixed(2) + ".");
+    } else if (p === "retired") {
+      leadSet("The 5 has retired for " + V.year + ".", "Outages have cost more than one full day this year, so the 4 wears the hat until January.");
+      stat(1, V.tally.toFixed(4), V.year + " so far"); stat(2, V.daysSince >= 0 ? String(V.daysSince) : "0", "days since the last outage");
+      setText($("nums"), "");
+    } else {
+      leadSet("All clear.", "Nothing is down, and the 5 has a coffee. Come back the next time email stops.");
+      setText($("plaque-n"), String(Math.max(0, V.daysSince)));
+      stat(1, V.tally.toFixed(4), V.year + " so far"); stat(2, last ? last.hours.toFixed(1) + " h" : "none", last ? "the last outage" : "outages on file");
+      setText($("nums"), "");
+    }
+    var title = live ? "Not yet · " + V.c.hms.slice(0, 5) + " to go" : answerFor(p) + " · Is it 364 yet?";
+    if (document.title !== title) { document.title = title; }
+    var icon = (p === "party" || p === "retired" ? "4" : "5");
+    if (icon !== lastIcon) {
+      lastIcon = icon;
+      var link = $("icon");
+      if (link) { link.setAttribute("href", "data:image/svg+xml," + encodeURIComponent(A.favicon(icon))); }
+    }
+    setText($("toys-h"), live ? "While the 5 hangs on" : p === "idle" ? "While the 5 has it easy" : "While you are here");
+  }
+  function altText() {
+    var p = L.pose(V), s = answerFor(p) + " ";
+    if (p === "live") { s += "The 5 has been hanging on for " + L.hangText(V.c.downMs) + ". Grip: " + A.STAGES[A.stage(V.c.frac)].name + ". The count is " + V.count.toFixed(4) + "."; }
+    else { s += $("lead").textContent; }
+    return s;
+  }
+  function stateChanged() {
+    var p = L.pose(V), first = shownPose === "", was = shownPose;
+    shownPose = p;
+    if (first) {
+      renderScene(true);
+      // On a first load the 4 is simply there. It only drops in after a fall that the visitor watched.
+      if (p === "party" && V.state === "party") { setTimeout(function () { confetti(12000); SND.horn(); }, 500); }
+    } else if (was === "live" && p === "party" && startFall()) {
+      /* the loop finishes the job */
+    } else {
+      vt(function () { renderScene(true); words(); });
+      if (p === "party" && RM) { confetti(0); }
+    }
+    words(); drawGround();
+    if (!first) { announce(altText()); }
+    betKey = "";
+  }
+  function showCheck() {
+    if (!MODEL.checked) { return; }
+    setText($("checked"), "Last check: " + L.ago(MODEL.checked, Date.now()) + ".");
+    setText($("mssays"), MODEL.status ? "Microsoft's page said: " + MODEL.status + "." : "");
+  }
+  function modelChanged() {
+    V = L.view(MODEL, now());
+    recordDraw();
+    var p = $("f-start"), b = document.createElement("b");
+    p.textContent = "";
+    if (MODEL.current) {
+      b.textContent = clock(MODEL.current.start);
+      p.appendChild(b);
+      p.appendChild(document.createTextNode(" for the outage running now. That is the start time Microsoft gave for the incident, as reported, so it is approximate. One full day later is " + clock(MODEL.current.start + DAY) + "."));
+    } else {
+      b.textContent = "Nothing is down right now.";
+      p.appendChild(b);
+      p.appendChild(document.createTextNode(" When an outage begins, the clock starts at the start time Microsoft reports for it, which is approximate. One full day later, it is official."));
+    }
+    showCheck(); betKey = "";
+    tick();
+  }
+  var ticks = 0;
+  function tick() {
+    ticks++;
+    V = L.view(MODEL, now());
+    if (L.pose(V) !== shownPose) { stateChanged(); }
+    else { renderScene(false); words(); }
+    if (V.year364 && !shown364) { shown364 = true; if (L.pose(V) === "retired") { setTimeout(function () { confetti(6000); }, 900); } }
+    setText($("f-tally"), tallyText() + (V.year364 ? " That makes " + V.year + " officially a 364." : ""));
+    betRender(); mCalc(); scrubSync();
+    if (ticks % 120 === 1) { showCheck(); }
+    if (!RM && ticks % Math.round(FEED_MS / 250) === 0) { mPush(L.mailSubject()); } else if (RM && ticks % 30 === 0) { mPush(L.mailSubject()); }
+  }
+
+  // ---- Team 5 or Team 4: one pick per incident ----
+  var bet = load("is364.bet"), betKey = "";
+  function betCtx() {
+    if (MODEL.current) { return { id: MODEL.current.id, start: MODEL.current.start, end: null }; }
+    var last = MODEL.incidents[0];
+    if (last && L.betValid(bet, last.id)) { return { id: last.id, start: last.start, end: last.end }; }
+    return null;
+  }
+  (function () {
+    var box = $("hours");
+    L.BUCKETS.slice(0, 4).forEach(function (b, i) {
+      var el = document.createElement("button");
+      el.type = "button"; el.className = "chip"; el.setAttribute("data-i", i);
+      box.appendChild(el);
+      el.addEventListener("click", function () {
+        var ctx = betCtx();
+        if (!ctx || ctx.end !== null || !L.betValid(bet, ctx.id) || bet.team !== "5" || typeof bet.i === "number") { return; }
+        if (L.betResolve(now(), ctx.start, null).gone[i]) { return; }
+        bet.i = i; store("is364.bet", bet); betKey = ""; betRender(); beep(880, 0.06);
+      });
+    });
+  })();
+  function pickTeam(team) {
+    var ctx = betCtx();
+    speak(L.pick(team === "5" ? L.QUIPS.hold : L.QUIPS.letgo));
+    if (team === "4" && rig.mode === "hang") { rig.om += 90; rig.qv += 1.5; }
+    wake();
+    if (!ctx || ctx.end !== null || L.betValid(bet, ctx.id)) { return; }
+    if (L.betResolve(now(), ctx.start, null).winner >= 0) { return; }
+    bet = { id: ctx.id, team: team, at: Date.now() };
+    store("is364.bet", bet);
+    beep(880, 0.06); beep(1175, 0.1, 0.08);
+    betKey = ""; betRender();
+  }
+  function betRender() {
+    var ctx = betCtx(), t = now();
+    var res = ctx ? L.betResolve(t, ctx.start, ctx.end) : { winner: -1, gone: [1, 1, 1, 1, 1] };
+    var mine = ctx && L.betValid(bet, ctx.id) ? bet : null;
+    var key = [ctx ? ctx.id + ctx.start + ctx.end : "", res.winner, mine ? mine.team + mine.i : "", res.gone.join("")].join("|");
+    if (key === betKey) { return; }
+    betKey = key;
+    $("t5").setAttribute("aria-pressed", mine && mine.team === "5" ? "true" : "false");
+    $("t4").setAttribute("aria-pressed", mine && mine.team === "4" ? "true" : "false");
+    setText($("bet-note"), ctx ? L.betNote(mine, res.winner) : "Sides open the next time the 5 is in trouble. Stake: one slice of cake.");
+    var box = $("hours"), open = !!mine && mine.team === "5" && ctx.end === null && res.winner < 0, i, el, picked = mine && typeof mine.i === "number";
+    box.hidden = !open || (!picked && res.gone[3]);
+    for (i = 0; i < 4; i++) {
+      el = box.children[i];
+      el.textContent = L.BUCKETS[i].name + ", by " + (ctx ? hm(ctx.start + L.BUCKETS[i].end) : "");
+      el.setAttribute("aria-pressed", picked && mine.i === i ? "true" : "false");
+      el.disabled = !!picked || !!res.gone[i];
+    }
+    $("hours-l").hidden = box.hidden;
+    setText($("hours-l"), picked ? "Your call on the hour:" : "Optional: call the hour of the all-clear too.");
+  }
+  $("t5").addEventListener("click", function () { pickTeam("5"); });
+  $("t4").addEventListener("click", function () { pickTeam("4"); });
+  // hold the button and the 5 musters its strength
+  (function () {
+    var el = $("t5");
+    function on() { if (rig.mode === "hang" && !busy) { rig.muster = true; wake(); } }
+    function off() { rig.muster = false; }
+    el.addEventListener("pointerdown", on); el.addEventListener("pointerup", off); el.addEventListener("pointerleave", off); el.addEventListener("pointercancel", off);
+    el.addEventListener("keydown", function (e) { if (e.key === " " || e.key === "Enter") { on(); } });
+    el.addEventListener("keyup", off); el.addEventListener("blur", off);
+  })();
+
+  // ---- the scrubber: drag through the 24 hours, let go and it springs back to now ----
+  var scrub = $("scrub"), scrubHeld = false, scrubIdle = 0, scrubBack = false;
+  function nowH() { return MODEL.current ? clamp((now() - MODEL.current.start) / HOUR, 0, 24) : 0; }
+  function scrubText(h, isNow) {
+    var s = A.STAGES[A.stage(h / 24)].name, sky = A.skyAt(MODEL.current ? MODEL.current.start + h * HOUR : now());
+    return (isNow ? "Now, hour " : "Hour ") + h.toFixed(1) + ": " + s + ". Sky: " + sky.name + ".";
+  }
+  function scrubSync() {
+    if (!MODEL.current) { previewH = null; return; }
+    var h = nowH();
+    scrub.style.setProperty("--now", (h / 24 * 100).toFixed(2) + "%");
+    if (previewH === null && !scrubBack) {
+      scrub.value = h.toFixed(2);
+      var txt = scrubText(h, true);
+      setText($("scrub-out"), txt); scrub.setAttribute("aria-valuetext", txt);
+    }
+    if (previewH !== null && !scrubHeld && Date.now() - scrubIdle > 2600) { scrubRelease(); }
+  }
+  function scrubRelease() {
+    if (previewH === null) { return; }
+    if (RM) { previewH = null; scrubBack = false; renderScene(true); scrubSync(); return; }
+    scrubBack = true; wake();
+  }
+  function stepScrub(dt) {
+    if (!scrubBack || previewH === null) { return; }
+    var h = nowH();
+    previewH += (h - previewH) * Math.min(1, dt * 9);
+    if (Math.abs(h - previewH) < 0.06) { previewH = null; scrubBack = false; scrubSync(); }
+    else { scrub.value = previewH.toFixed(2); setText($("scrub-out"), scrubText(previewH, false)); }
+    renderScene(false);
+  }
+  scrub.addEventListener("input", function () {
+    if (!MODEL.current || busy) { return; }
+    scrubBack = false; scrubIdle = Date.now();
+    previewH = parseFloat(scrub.value);
+    var txt = scrubText(previewH, false);
+    setText($("scrub-out"), txt); scrub.setAttribute("aria-valuetext", txt);
+    renderScene(false); wake();
+  });
+  scrub.addEventListener("pointerdown", function () { scrubHeld = true; });
+  ["pointerup", "pointercancel", "blur"].forEach(function (ev) {
+    scrub.addEventListener(ev, function () { scrubHeld = false; if (ev !== "blur" || previewH !== null) { scrubRelease(); } });
+  });
+
+  // =============================================================================
+  // The postcard: the scene and the words on a canvas, then share or download
+  // =============================================================================
+  var pc = { fmt: "wide", blob: null, url: "" };
+  function pcData() {
+    var p = L.pose(V), ctx = betCtx(), mine = ctx && L.betValid(bet, ctx.id) ? bet : null, d = { pose: p, stage: p === "live" ? A.stage(V.c.frac) : 0, sky: A.skyAt(now()), answer: answerFor(p), team: mine ? mine.team : "" };
+    var lead = $("lead"), b = lead.firstChild ? lead.firstChild.textContent : "";
+    d.line1 = b; d.line2 = lead.textContent.slice(b.length).trim();
+    if (d.line2.length > 62) { d.line2 = d.line2.split(". ")[0] + "."; }
+    return d;
+  }
+  function pcBuild() {
+    var d = pcData(), W = pc.fmt === "tall" ? 1080 : 1200, H = pc.fmt === "tall" ? 1350 : 630, svg = A.postcard(pc.fmt, d);
+    var img = $("pc-img");
+    img.setAttribute("alt", "Postcard. " + d.answer + " " + d.line1 + " " + d.line2 + (d.team ? " I'm on Team " + d.team + "." : ""));
+    img.setAttribute("width", W); img.setAttribute("height", H);
+    pc.blob = null;
+    $("pc-share").disabled = true; $("pc-save").disabled = true;
+    setText($("pc-note"), "Drawing the card.");
+    var src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg), im = new Image();
+    img.src = src;
+    im.onload = function () {
+      try {
+        var c = document.createElement("canvas"); c.width = W; c.height = H;
+        c.getContext("2d").drawImage(im, 0, 0, W, H);
+        c.toBlob(function (b) {
+          pc.blob = b;
+          $("pc-save").disabled = !b;
+          var file = b && window.File ? new File([b], "is-it-364-yet.png", { type: "image/png" }) : null;
+          pc.file = file;
+          pc.canShare = !!(file && navigator.canShare && navigator.share && navigator.canShare({ files: [file] }));
+          $("pc-share").disabled = !pc.canShare; $("pc-share").hidden = !pc.canShare;
+          setText($("pc-note"), b ? (pc.canShare ? "Ready. Share it, or save the image." : "Ready. Save the image and post it anywhere. The link is copied with it.") : "This browser could not make the image. Take a screenshot instead.");
+        }, "image/png");
+      } catch (e) { setText($("pc-note"), "This browser could not make the image. Take a screenshot instead."); }
+    };
+    im.onerror = function () { setText($("pc-note"), "This browser could not make the image. Take a screenshot instead."); };
+    im.src = src;
+  }
+  function pcText() {
+    var p = L.pose(V);
+    return (p === "live" ? "The 5 is hanging on. If email stays down a full day, 365 becomes 364. Check on it: "
+      : p === "party" ? "It's official: 365 is now 364. " : p === "off" ? "The 5 made it. 365 stands. " : "All clear for now. The 5 is watching for the day 365 becomes 364. ") + HERE;
+  }
+  function pcFmt(f) {
+    pc.fmt = f;
+    $("pc-wide").setAttribute("aria-pressed", f === "wide" ? "true" : "false");
+    $("pc-tall").setAttribute("aria-pressed", f === "tall" ? "true" : "false");
+    pcBuild();
+  }
+  $("postcard-btn").addEventListener("click", function () {
+    var d = $("pc");
+    pcFmt(mq("(max-width: 640px)") ? "tall" : "wide");
+    if (d.showModal) { d.showModal(); } else { d.setAttribute("open", ""); }
+  });
+  $("pc-wide").addEventListener("click", function () { pcFmt("wide"); });
+  $("pc-tall").addEventListener("click", function () { pcFmt("tall"); });
+  $("pc-close").addEventListener("click", function () { var d = $("pc"); if (d.close) { d.close(); } else { d.removeAttribute("open"); } });
+  $("pc-share").addEventListener("click", function () {
+    if (!pc.canShare) { return; }
+    navigator.share({ files: [pc.file], title: "Is it 364 yet?", text: pcText() }).catch(function () {});
+  });
+  $("pc-save").addEventListener("click", function () {
+    if (!pc.blob) { return; }
+    var a = document.createElement("a"), u = URL.createObjectURL(pc.blob);
+    a.href = u; a.download = "is-it-364-yet-" + pc.fmt + ".png";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(u); }, 4000);
+    copy(pcText(), true);
+    setText($("pc-note"), "Saved. The link and a line to go with it are on your clipboard.");
+  });
+  $("pc-link").addEventListener("click", function () { copy(pcText(), true); setText($("pc-note"), "Link copied."); });
+
+  // =============================================================================
+  // Toys
+  // =============================================================================
+  // ---- Inbox Defender ----
+  var G = L.gameNew(+load("is364.hi") || 0), gNext = 0, gLast = 0, gOverAt = 0, gDirty = true, gPx = 1;
+  var gcv = $("game"), gctx = gcv.getContext("2d"), five2d = null;
+  function gRunning() { return G.started && !G.over; }
+  function gStart() {
+    if (G.over && Date.now() - gOverAt < 900) { return; }
+    G = L.gameNew(G.hi); G.started = true; gLast = Date.now(); gNext = gLast + 500;
+    beep(660, 0.05); beep(880, 0.08, 0.07);
+    gPanel(); wake();
+  }
+  function gPanel() {
+    setText($("g-score"), "Tickets closed: " + G.score);
+    setText($("g-miss"), "Misses: " + G.misses + " of 3");
+    $("g-miss").setAttribute("aria-label", "Misses: " + G.misses + " of 3");
+    setText($("g-ok"), G.over ? "Play again" : gRunning() ? "Mute thread (" + G.mutes + ")" : "Start");
+    setText($("g-last"), G.over ? L.gameResult(G.score) : gRunning() ? (G.last || "Catch the mail.") : "Best: " + G.hi);
+    $("g-copy").hidden = !G.over;
+    gDirty = true;
+  }
+  function gTick() {
+    var ev = L.gameStep(G), i;
+    gLast = Date.now(); gNext = gLast + L.gameInterval(G.score);
+    for (i = 0; i < ev.length; i++) {
+      var e = ev[i].type;
+      if (e === "catch") { beep(1175, 0.04); }
+      else if (e === "miss" || e === "phish") { beep(196, 0.16); buzz(30); }
+      else if (e === "mute+") { beep(1568, 0.05, 0.05); }
+      else if (e === "over") {
+        gOverAt = Date.now(); store("is364.hi", G.hi);
+        beep(392, 0.12); beep(330, 0.12, 0.14); beep(262, 0.25, 0.28);
+        announce("Game over. " + L.gameResult(G.score) + " Best: " + G.hi + ".");
+      }
+    }
+    if (ev.length) { gPanel(); }
+  }
+  function gOk() {
+    if (!gRunning()) { gStart(); return; }
+    if (L.gameMute(G) >= 0) { beep(523, 0.05); beep(784, 0.05, 0.06); beep(1047, 0.08, 0.12); gPanel(); }
+    else { beep(147, 0.08); }
+  }
+  function gMove(d) { L.gameMove(G, d); gDirty = true; wake(); }
+  function rr(c, x, y, w, h, r) {
+    c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+  }
+  function gItem(c, kind, x, y) {
+    var C = A.C;
+    c.lineWidth = 3; c.strokeStyle = C.ink; c.lineJoin = "round";
+    if (kind === "phish") {
+      c.fillStyle = C.drop;
+      c.beginPath(); c.ellipse(x - 4, y, 20, 12, 0, 0, 6.3); c.fill(); c.stroke();
+      c.beginPath(); c.moveTo(x + 14, y); c.lineTo(x + 28, y - 11); c.lineTo(x + 28, y + 11); c.closePath(); c.fill(); c.stroke();
+      c.fillStyle = C.ink; c.beginPath(); c.arc(x - 13, y - 3, 2.6, 0, 6.3); c.fill();
+      return;
+    }
+    c.fillStyle = kind === "rush" ? C.four : C.white;
+    rr(c, x - 23, y - 16, 46, 32, 5); c.fill(); c.stroke();
+    c.beginPath(); c.moveTo(x - 21, y - 13); c.lineTo(x, y + 3); c.lineTo(x + 21, y - 13); c.stroke();
+    if (kind === "rush") { c.fillStyle = C.ink; c.fillRect(x + 12, y - 2, 4, 9); c.fillRect(x + 12, y + 9, 4, 4); }
+  }
+  function gameFrame() {
+    var t = Date.now(), run = gRunning();
+    if (run && t >= gNext) { gTick(); }
+    if (!run && !gDirty) { return; }
+    gDirty = false;
+    var w = gcv.clientWidth || 320, dpr = Math.min(window.devicePixelRatio || 1, 2.5), pw = Math.round(w * dpr), ph = Math.round(pw * 1.25);
+    if (gcv.width !== pw) { gcv.width = pw; gcv.height = ph; }
+    var c = gctx, k = pw / 320, C = A.C, i, it;
+    c.setTransform(k, 0, 0, k, 0, 0);
+    c.clearRect(0, 0, 320, 400);
+    c.strokeStyle = C.white; c.lineWidth = 3;
+    for (i = 1; i < 4; i++) { c.beginPath(); c.moveTo(i * 80, 8); c.lineTo(i * 80, 392); c.stroke(); }
+    c.fillStyle = C.ink; c.fillRect(0, 392, 320, 8);
+    var f = run ? clamp((t - gLast) / Math.max(1, gNext - gLast), 0, 1) : 0;
+    for (i = 0; i < G.items.length; i++) {
+      it = G.items[i];
+      gItem(c, it.kind, it.lane * 80 + 40, 30 + Math.min(L.G_ROWS, it.row + f * (it.kind === "rush" ? 2 : 1)) * 57);
+    }
+    // the 5, holding a tray
+    gPx += (G.player - gPx) * (RM ? 1 : 0.45);
+    if (Math.abs(G.player - gPx) > 0.01) { gDirty = true; }
+    var px = gPx * 80 + 40;
+    c.strokeStyle = C.ink; c.lineWidth = 6; c.lineCap = "round";
+    c.beginPath(); c.moveTo(px - 28, 322); c.lineTo(px + 28, 322); c.stroke();
+    c.strokeStyle = C.five; c.lineWidth = 5;
+    c.beginPath(); c.moveTo(px - 12, 336); c.lineTo(px - 20, 325); c.moveTo(px + 10, 336); c.lineTo(px + 20, 325); c.stroke();
+    if (five2d === null) { try { five2d = new Path2D(A.GLYPH["5"]); } catch (e) { five2d = false; } }
+    if (five2d) {
+      c.save(); c.translate(px - 21, 332); c.scale(0.21, 0.21);
+      c.lineWidth = 50; c.lineJoin = "round"; c.stroke(five2d);
+      c.fillStyle = C.white; c.beginPath(); c.arc(98, 33, 11, 0, 6.3); c.arc(132, 33, 11, 0, 6.3); c.fill();
+      c.restore();
+    } else { c.fillStyle = C.five; c.fillRect(px - 14, 334, 28, 44); }
+    if (!run) {
+      c.fillStyle = C.ink; c.textAlign = "center";
+      c.font = "700 26px 'Avenir Next Condensed','Arial Narrow',Arial,sans-serif";
+      c.fillText(G.over ? "The reply-alls win." : "Catch the mail.", 160, 150);
+      c.font = "600 15px 'Avenir Next','Segoe UI',Arial,sans-serif";
+      c.fillText(G.over ? L.gameResult(G.score) : "Press Start, or tap here.", 160, 178);
+    }
+  }
+  function bindFast(el, fn) {
+    var skip = false;
+    el.addEventListener("pointerdown", function (e) { if (e.button) { return; } skip = true; fn(); });
+    ["pointercancel", "pointerleave", "blur"].forEach(function (ev) { el.addEventListener(ev, function () { skip = false; }); });
+    el.addEventListener("click", function () { if (skip) { skip = false; return; } fn(); });
+  }
+  bindFast($("g-left"), function () { gMove(-1); beep(440, 0.02); });
+  bindFast($("g-right"), function () { gMove(1); beep(440, 0.02); });
+  $("g-ok").addEventListener("click", function () { gOk(); wake(); });
+  $("g-copy").addEventListener("click", function () { copy(L.gameResult(G.score) + " " + HERE); });
+  gcv.addEventListener("pointerdown", function (e) {
+    if (!gRunning()) { gStart(); return; }
+    var r = gcv.getBoundingClientRect();
+    L.gameSet(G, Math.floor((e.clientX - r.left) / r.width * 4)); gDirty = true; beep(440, 0.02); wake();
+  });
+
+  // ---- bingo ----
+  var card = load("is364.bingo"), hadBingo = false, bScore = null;
+  function bSave() { store("is364.bingo", card); }
+  function bDraw() {
+    var grid = $("grid"), i, b;
+    grid.textContent = "";
+    for (i = 0; i < 25; i++) {
+      b = document.createElement("button");
+      b.type = "button"; b.className = "cell"; b.textContent = card.squares[i];
+      b.setAttribute("aria-pressed", card.on[i] ? "true" : "false");
+      b.setAttribute("data-i", i);
+      grid.appendChild(b);
+    }
+    bMark(false);
+  }
+  function bMark(celebrate) {
+    var cells = $("grid").children, i;
+    bScore = L.bingoScore(card.on);
+    for (i = 0; i < 25; i++) {
+      cells[i].setAttribute("aria-pressed", card.on[i] ? "true" : "false");
+      cells[i].classList.toggle("win", !!bScore.wins[i]);
+    }
+    setText($("tally"), (bScore.any ? "Bingo. " : "") + bScore.count + " of 25");
+    if (bScore.any && !hadBingo && celebrate) {
+      confetti(2600);
+      beep(784, 0.08); beep(988, 0.08, 0.1); beep(1175, 0.08, 0.2); beep(1568, 0.2, 0.3);
+    }
+    hadBingo = bScore.any;
+  }
+  $("grid").addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest(".cell") : null;
+    if (!b) { return; }
+    var i = +b.getAttribute("data-i");
+    card.on[i] = !card.on[i];
+    bSave(); bMark(true); beep(card.on[i] ? 880 : 440, 0.04);
+  });
+  $("bingo-new").addEventListener("click", function () { vt(function () { card = L.bingoDeal(); hadBingo = false; bSave(); bDraw(); }); });
+  $("bingo-copy").addEventListener("click", function () {
+    copy("Outage bingo, " + bScore.count + " of 25" + (bScore.any ? ", BINGO" : "") + "\n" + L.bingoEmoji(card.on) + "\n" + HERE);
+  });
+  if (!L.bingoValid(card)) { card = L.bingoDeal(); bSave(); }
+
+  // ---- helpdesk ticket ----
+  var sender = "", ticket = null;
+  function tNew() {
+    ticket = L.ticketMake(sender);
+    var out = $("t-out"), dl = document.createElement("dl");
+    [["Ticket", ticket.num + ", from: " + ticket.sender], ["Priority (self-assessed)", ticket.pri], ["Subject", ticket.subject],
+     ["Message", ticket.body], ["Helpdesk auto-reply", ticket.reply]].forEach(function (p) {
+      var dt = document.createElement("dt"), dd = document.createElement("dd");
+      dt.textContent = p[0]; dd.textContent = p[1]; dl.appendChild(dt); dl.appendChild(dd);
+    });
+    out.textContent = ""; out.appendChild(dl);
+    $("t-copy").hidden = false;
+    beep(1047, 0.05); beep(1319, 0.1, 0.1);
+  }
+  (function () {
+    var box = $("senders"), list = [{ id: "", name: "Surprise me" }].concat(L.SENDERS);
+    list.forEach(function (s) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "pick"; b.textContent = s.name;
+      b.setAttribute("aria-pressed", s.id === sender ? "true" : "false");
+      b.addEventListener("click", function () {
+        sender = s.id;
+        for (var i = 0; i < box.children.length; i++) { box.children[i].setAttribute("aria-pressed", box.children[i] === b ? "true" : "false"); }
+      });
+      box.appendChild(b);
+    });
+  })();
+  $("t-new").addEventListener("click", function () { vt(tNew); });
+  $("t-copy").addEventListener("click", function () { if (ticket) { copy(ticket.text + "\n" + HERE); } });
+
+  // ---- missed mail ----
+  function downDays() {
+    if (MODEL.current) { return Math.max(0, now() - MODEL.current.start) / DAY; }
+    return V.last ? V.last.hours / 24 : 0;
+  }
+  function mCalc() {
+    var m = L.missedCounts($("in-mail").value, $("in-meet").value, downDays());
+    setText($("d-mail"), m.mail.toLocaleString());
+    setText($("d-reply"), m.reply.toLocaleString());
+    setText($("d-meet"), m.meet.toLocaleString());
+    setText($("m-note"), MODEL.current ? "What you are not receiving right now, counted since this outage began."
+      : V.last ? "Nothing is down right now. These are the totals from the last outage."
+      : "Nothing is down and nothing is on file. Enjoy your email.");
+  }
+  function mPush(s) {
+    var ul = $("feed"), li = document.createElement("li");
+    li.textContent = s; ul.insertBefore(li, ul.firstChild);
+    while (ul.children.length > 6) { ul.removeChild(ul.lastChild); }
+  }
+  $("in-mail").addEventListener("input", mCalc);
+  $("in-meet").addEventListener("input", mCalc);
+
+  // ---- root cause ----
+  var cause = ["Somebody", "did something to", "something"], cBusy = false;
+  function cPull() {
+    if (cBusy) { return; }
+    var end = L.causePull(), out = $("c-out");
+    function done() {
+      cause = end; cBusy = false;
+      out.setAttribute("aria-live", "polite");
+      setText(out, end.join(" ") + ".");
+      if (end[2] === "DNS") { beep(523, 0.1); beep(659, 0.1, 0.12); beep(784, 0.2, 0.24); rig.roll = 1.4; wake(); } else { beep(784, 0.06); }
+    }
+    if (RM) { done(); return; }
+    cBusy = true;
+    out.setAttribute("aria-live", "off");
+    var stop = [Date.now() + 600, Date.now() + 1050, Date.now() + 1500];
+    var roll = setInterval(function () {
+      var t = Date.now(), all = true, show = [], i;
+      for (i = 0; i < 3; i++) { if (t < stop[i]) { show.push(L.causeSpin(i)); all = false; } else { show.push(end[i]); } }
+      out.textContent = show.join(" ") + ".";
+      if (all) { clearInterval(roll); done(); }
+    }, 80);
+  }
+  $("c-pull").addEventListener("click", cPull);
+  $("c-copy").addEventListener("click", function () { copy("Root cause: " + cause.join(" ") + ". " + HERE); });
+
+  // ---- the record ----
+  function recordText() {
+    var out = ["Is it 364 yet? " + tallyText()], i, inc;
+    if (MODEL.current) { out.push("Down right now, since " + clock(MODEL.current.start) + "."); }
+    for (i = 0; i < MODEL.incidents.length; i++) {
+      inc = MODEL.incidents[i];
+      out.push(L.dayLabel(inc.id) + ": down " + inc.hours.toFixed(1) + " hours, final score " + L.incidentScore(inc.hours).toFixed(2) +
+        ", the 5 " + (inc.made364 ? "fell" : "held on"));
+    }
+    out.push(HERE);
+    return out.join("\n");
+  }
+  function recordDraw() {
+    var body = $("record-body"), i;
+    function tr(cells) {
+      var r = document.createElement("tr");
+      cells.forEach(function (s) { var d = document.createElement("td"); d.textContent = s; r.appendChild(d); });
+      body.appendChild(r);
+    }
+    body.textContent = "";
+    if (MODEL.current) { tr([L.dayLabel(MODEL.current.id), "still down", "falling", "hanging on"]); }
+    for (i = 0; i < MODEL.incidents.length; i++) {
+      var inc = MODEL.incidents[i];
+      tr([L.dayLabel(inc.id), inc.hours.toFixed(1), L.incidentScore(inc.hours).toFixed(2), inc.made364 ? "Yes. 364." : "No. It held on."]);
+    }
+    if (!body.children.length) {
+      var r = document.createElement("tr"), d = document.createElement("td");
+      d.colSpan = 4; d.textContent = "Nothing on file yet."; r.appendChild(d); body.appendChild(r);
+    }
+  }
+  $("a-copy").addEventListener("click", function () { copy(recordText()); });
+  $("share").addEventListener("click", function () { copy(pcText()); });
+  function drawGround() {
+    var g = $("ground");
+    if (g) { g.innerHTML = A.ground(V.state === "party"); }
+  }
+
+  // ---- keys: arrows and A/D play the game; typing "dns" earns an eye roll ----
+  var typed = "";
+  document.addEventListener("keydown", function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) { return; }
+    var tg = e.target, tag = tg && tg.tagName, k = e.key || "";
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") { return; }
+    if (k.length === 1) {
+      typed = (typed + k.toLowerCase()).slice(-3);
+      if (typed === "dns") { typed = ""; rig.roll = 1.4; speak("It's always DNS."); wake(); }
+    }
+    if (!gRunning()) { return; }
+    if (k === "ArrowLeft" || k === "a" || k === "A") { gMove(-1); e.preventDefault(); }
+    else if (k === "ArrowRight" || k === "d" || k === "D") { gMove(1); e.preventDefault(); }
+    else if (k === " " && tag !== "BUTTON" && tag !== "A") { gOk(); e.preventDefault(); }
+  });
+
+  // ---- confetti: a burst of that many ms ----
+  var confRaf = 0, confC = null;
+  function confetti(ms) {
+    if (RM || !ms) { return; }
+    if (!confC) {
+      confC = document.createElement("canvas");
+      confC.id = "confetti"; confC.setAttribute("aria-hidden", "true");
+      document.body.appendChild(confC);
+    }
+    var c = confC, ctx = c.getContext("2d");
+    var r = Math.min(window.devicePixelRatio || 1, 2);
+    var W = window.innerWidth, H = window.innerHeight, bits = [], i;
+    c.width = W * r; c.height = H * r;
+    ctx.setTransform(r, 0, 0, r, 0, 0);
+    var n = Math.min(170, Math.floor(W / 6) + 50);
+    for (i = 0; i < n; i++) {
+      bits.push({ x: Math.random() * W, y: Math.random() * -H, w: 6 + Math.random() * 6, h: 9 + Math.random() * 10,
+                  vy: 2 + Math.random() * 3, vx: -1 + Math.random() * 2, a: Math.random() * 6.28,
+                  va: -0.14 + Math.random() * 0.28, col: CONFETTI[i % CONFETTI.length] });
+    }
+    var until = performance.now() + ms;
+    cancelAnimationFrame(confRaf);
+    (function step(ts) {
+      var stopping = ts > until, alive = false;
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < bits.length; i++) {
+        var b = bits[i];
+        b.x += b.vx; b.y += b.vy; b.a += b.va;
+        if (b.y > H + 20) { if (stopping) { continue; } b.y = -20; b.x = Math.random() * W; }
+        alive = true;
+        ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.a);
+        ctx.fillStyle = b.col;
+        ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h * Math.abs(Math.cos(b.a)));
+        ctx.restore();
+      }
+      if (alive && !document.hidden) { confRaf = requestAnimationFrame(step); } else { ctx.clearRect(0, 0, W, H); }
+    })(performance.now());
+  }
+
+  // ---- go ----
+  bDraw();
+  gPanel();
+  for (var s0 = 0; s0 < 4; s0++) { mPush(L.mailSubject()); }
+  modelChanged();
+  gameFrame();
+  window.addEventListener("resize", function () { gDirty = true; wake(); if (!rafId) { gameFrame(); } });
+  setInterval(function () { if (!document.hidden) { tick(); } }, 250);
+  wake();
+  poll();
+  setInterval(poll, 60000);
+})();
+</script>
+</body>
+</html>
