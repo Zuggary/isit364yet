@@ -532,7 +532,7 @@
             <tbody id="record-body"><tr><td colspan="3">Nothing yet.</td></tr></tbody>
           </table>
         </div>
-        <p>No ads yet, no tracking, no sign-in, no real money. Your side, your bingo card and your best scores stay in this browser. Microsoft 365 and Outlook are trademarks of Microsoft Corporation. Real people work long nights to fix these. The first slice of cake is theirs.</p>
+        <p>No ads yet, no cookies, no sign-in, no real money. A cookie-free counter from Cloudflare counts visits; the <a href="privacy.html">privacy page</a> says what it sees. Your side, your bingo card and your best scores stay in this browser. Microsoft 365 and Outlook are trademarks of Microsoft Corporation. Real people work long nights to fix these. The first slice of cake is theirs.</p>
       </div>
     </details>
   </footer>
@@ -2618,6 +2618,10 @@ var ART364 = (function () {
   poll();
   setInterval(poll, 60000);
 })();
+</script>
+<script data-counter>
+  // Cloudflare Web Analytics: counts visits, sets no cookie (see privacy.html). It loads on the live site only, so tests and local copies send nothing.
+  if (/(^|\.)isit364yet\.com$/.test(location.hostname)) { (function () { var s = document.createElement("script"); s.type = "module"; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.setAttribute("data-cf-beacon", '{"token": "9e07e581ca6641f9bf94c04455f48ed1"}'); document.head.appendChild(s); })(); }
 </script>
 </body>
 </html>
