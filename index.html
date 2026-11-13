@@ -643,14 +643,12 @@ var M364 = (function () {
     if (!won) {
       if (!bet) { return "Pick a side. The bet: one slice of cake."; }
       return (bet.team === "5" ? "You are on Team 5: it holds on." : "You are on Team 4: it lets go.") +
-        (typeof bet.i === "number" && BUCKETS[bet.i] && bet.team === "5" ? " Your guess: fixed in " + BUCKETS[bet.i].name.toLowerCase() + "." : "") +
-        " Cake is on the line.";
+        " Cake is on the line. Tap the other side to switch.";
     }
     var line = won === "5" ? "Team 5 wins: it held on." : "Team 4 wins: it let go.";
     if (!bet) { return line + " Betting is closed."; }
     if (bet.team !== won) { return line + " You owe the IT team a slice of cake."; }
-    return line + " You called it. One slice of cake is yours." +
-      (bet.team === "5" && typeof bet.i === "number" ? (bet.i === winner ? " You even called the hour." : " You missed the hour, though.") : "");
+    return line + " You called it. One slice of cake is yours.";
   }
 
   // ---- bingo: a 3 x 3 card, the middle is free ----
@@ -1157,7 +1155,7 @@ var ART364 = (function () {
     o += '<g class="cl far" fill="' + C.white + '" opacity="' + (0.5 - n * 0.25).toFixed(2) + '">' + cloud(790, 70, 1.25) + cloud(330, 590, 0.9) + '</g>';
     // far-off offices, one light still on
     o += '<g class="town"><path d="' + (cut ? "" : "M0 700V640h60v-40h70v60h50v-90h80v70h40v60z") + 'M1000 700V620h-70v-50h-60v70h-50v-30h-70v90z" fill="' + C.ink + '" opacity=".13"/>' +
-      (cut ? "" : '<rect class="lit" x="196" y="590" width="14" height="18" fill="' + C.four + '" opacity="' + (0.25 + n * 0.75).toFixed(2) + '"/>') + '</g>';
+      (cut ? "" : '<rect class="lit" x="22" y="656" width="14" height="18" fill="' + C.four + '" opacity="' + (0.25 + n * 0.75).toFixed(2) + '"/>') + '</g>';
     o += '<g class="cl near" fill="' + C.white + '" opacity="' + (0.7 - n * 0.3).toFixed(2) + '">' + (cut ? "" : cloud(40, 130, 1)) + cloud(560, 520, 0.7) + '</g>';
     return o;
   }
@@ -1863,8 +1861,9 @@ var ART364 = (function () {
     speak(L.pick(team === "5" ? L.QUIPS.hold : L.QUIPS.letgo));
     if (team === "4" && rig.mode === "hang") { rig.om += 90; rig.qv += 1.5; }
     wake();
-    if (!ctx || ctx.end !== null || L.betValid(bet, ctx.id)) { return; }
+    if (!ctx || ctx.end !== null) { return; }
     if (L.betResolve(now(), ctx.start, null).winner >= 0) { return; }
+    if (L.betValid(bet, ctx.id) && bet.team === team) { return; }
     bet = { id: ctx.id, team: team, at: Date.now() };
     store("is364.bet", bet);
     beep(880, 0.06); beep(1175, 0.1, 0.08);
@@ -1881,7 +1880,7 @@ var ART364 = (function () {
     $("t4").setAttribute("aria-pressed", mine && mine.team === "4" ? "true" : "false");
     setText($("bet-note"), ctx ? L.betNote(mine, res.winner) : "Sides open the next time email breaks.");
     var box = $("hours"), open = !!mine && mine.team === "5" && ctx.end === null && res.winner < 0, i, el, picked = mine && typeof mine.i === "number";
-    box.hidden = !open || (!picked && res.gone[3]);
+    box.hidden = true; // the guess chips are retired; a stored guess is ignored
     for (i = 0; i < 4; i++) {
       el = box.children[i];
       el.textContent = L.BUCKETS[i].name + ", by " + (ctx ? hm(ctx.start + L.BUCKETS[i].end) : "");
