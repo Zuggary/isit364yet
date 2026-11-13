@@ -679,7 +679,7 @@ var M364 = (function () {
         " Cake is on the line. Tap the other side to switch.";
     }
     var line = won === "5" ? "Team 5 wins: it held on." : "Team 4 wins: it let go.";
-    if (!bet) { return line + (ongoing ? " The outage is not over." : " Betting is closed."); }
+    if (!bet) { return line + (ongoing ? " Microsoft's incident is still open." : " Betting is closed."); }
     if (bet.team !== won) { return line + " You owe the IT team a slice of cake."; }
     return line + " You called it. One slice of cake is yours.";
   }
@@ -1813,8 +1813,8 @@ var ART364 = (function () {
       leadSet("Microsoft 365 email is down.", "If it stays down 24 hours, the 5 falls and 365 turns into 364.");
       stat(2, V.c.hms, "until the 5 falls"); stat(1, L.hangText(V.c.downMs), "down so far");
     } else if (V.state === "party") {
-      leadSet("Still down, says Microsoft's status page.", "The 5 fell at 24 hours, so 365 is 364 for now. The 5 is trying to climb back. It gets home when email works again.");
-      stat(2, "364", "for now"); stat(1, L.clockText(V.c.downMs, RM), "down and counting");
+      leadSet("Not over yet, says Microsoft's status page.", "Its incident is still open, even if your email is back. The 5 fell at 24 hours, so 365 is 364 for now. It gets home when Microsoft closes the incident.");
+      stat(2, "364", "for now"); stat(1, L.clockText(V.c.downMs, RM), "incident open");
     } else if (p === "party") {
       leadSet("The 5 fell.", "Email was down " + last.hours.toFixed(0) + " hours on " + L.dayLabel(last.id) + ", a full day, so 365 became 364. It works now.");
       stat(2, "364", "the new number"); stat(1, last.hours.toFixed(1) + " h", "email was down");
@@ -1829,7 +1829,7 @@ var ART364 = (function () {
       setText($("plaque-n"), String(Math.max(0, V.daysSince)));
       stat(2, "", ""); stat(1, "", "");
     }
-    var title = live ? "Not yet · " + V.c.hms.slice(0, 5) + " to go" : going ? "Yes, for now · Microsoft says still down · Is it 364 yet?" : answerFor(p) + " · Is it 364 yet?";
+    var title = live ? "Not yet · " + V.c.hms.slice(0, 5) + " to go" : going ? "Yes, for now · incident still open · Is it 364 yet?" : answerFor(p) + " · Is it 364 yet?";
     if (document.title !== title) { document.title = title; }
     var icon = (p === "party" || p === "retired" ? "4" : "5");
     if (icon !== lastIcon) {
@@ -1842,7 +1842,7 @@ var ART364 = (function () {
   function altText() {
     var p = L.pose(V), s = answerFor(p) + " ";
     if (p === "live") { s += "Email has been down " + L.hangText(V.c.downMs) + ". The 5's grip: " + A.STAGES[A.stage(V.c.frac)].name + "."; }
-    else if (V.state === "party") { s += "Microsoft's status page still shows email down, past a full day. 365 is 364 for now. The 5 is trying to climb back."; }
+    else if (V.state === "party") { s += "Microsoft's status page still shows the incident open, past a full day. Email may work again for you. 365 is 364 for now. The 5 is trying to climb back."; }
     else { s += $("lead").textContent; }
     return s;
   }
@@ -2090,7 +2090,7 @@ var ART364 = (function () {
   function pcText() {
     var p = L.pose(V);
     return (p === "live" ? "Email is down. If it stays down 24 hours, 365 turns into 364. Check on the 5: "
-      : V.state === "party" ? "Microsoft's status page still shows email down, past a full day. 365 is 364 for now. " : p === "party" ? "Email was down a full day. 365 is now 364. " : p === "off" ? "Email came back in time. 365 stands. " : "Email works. The 5 is resting. ") + HERE;
+      : V.state === "party" ? "Microsoft's status page still shows the incident open, past a full day. Email may work again for you. 365 is 364 for now. " : p === "party" ? "Email was down a full day. 365 is now 364. " : p === "off" ? "Email came back in time. 365 stands. " : "Email works. The 5 is resting. ") + HERE;
   }
   $("postcard-btn").addEventListener("click", function () {
     var d = $("pc");
@@ -2521,7 +2521,7 @@ var ART364 = (function () {
       body.appendChild(r);
     }
     body.textContent = "";
-    if (MODEL.current) { tr([L.dayLabel(MODEL.current.id), "still down", "hanging on"]); }
+    if (MODEL.current) { tr([L.dayLabel(MODEL.current.id), "still open", "hanging on"]); }
     for (i = 0; i < MODEL.incidents.length; i++) {
       var inc = MODEL.incidents[i];
       tr([L.dayLabel(inc.id), inc.hours.toFixed(1), inc.made364 ? "Yes. 364." : "No. It held on."]);
