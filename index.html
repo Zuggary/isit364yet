@@ -628,6 +628,12 @@ var M364 = (function () {
     return 365 - lost;
   }
   var RECENT_MS = 48 * 60 * 60 * 1000;
+  // The Microsoft SLA claim window: until the end of the month after the month the incident started (UTC). The page shows its credit prompt until then.
+  function claimOpen(inc, t) {
+    if (!inc || !isFinite(inc.start) || !(inc.hours * 60 >= 44)) { return false; }
+    var d = new Date(inc.start);
+    return t <= Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 2, 0, 23, 59, 59);
+  }
   function view(model, t) {
     var v = { year: new Date(t).getUTCFullYear(), tally: yearTally(model, t), state: "idle", c: null,
               last: model.incidents[0] || null, recent: false, daysSince: -1 };
@@ -997,7 +1003,7 @@ var M364 = (function () {
 
   return {
     DAY: DAY, pick: pick, pad: pad,
-        statusNormalize: statusNormalize, incidentScore: incidentScore, dayLabel: dayLabel, clockState: clockState,
+        statusNormalize: statusNormalize, incidentScore: incidentScore, dayLabel: dayLabel, clockState: clockState, claimOpen: claimOpen,
     yearTally: yearTally, view: view, pose: pose, ago: ago, QUIPS: QUIPS, hangText: hangText, clockText: clockText,
     BUCKETS: BUCKETS, betResolve: betResolve, betValid: betValid, betNote: betNote, betTeamWinner: betTeamWinner,
     SQUARES: SQUARES, FREE: FREE, LINES: LINES, B_N: B_N, B_MID: B_MID, bingoDeal: bingoDeal, bingoValid: bingoValid,
@@ -1387,6 +1393,8 @@ var ART364 = (function () {
     if (name === "party") { j.status = "Service degradation"; j.current = { id: day(n - DAY), start: iso(n - DAY - 5000) }; }
     else if (name === "soon") { j.status = "Service degradation"; j.current = { id: day(n - DAY), start: iso(n - DAY + 8000) }; }
     else if (name === "off") { j.incidents = [inc(60000, 13.4)]; }
+    else if (name === "claim") { j.incidents = [inc(3 * DAY, 36)]; }
+    else if (name === "claimold") { j.incidents = [inc(75 * DAY, 36)]; }
     else if (name === "idle") { j.incidents = [inc(23 * DAY + 2 * HOUR, 3.2), inc(40 * DAY, 14.4)]; }
     else if (name === "year364") { j.incidents = [inc(5 * DAY + HOUR, 6.5), inc(20 * DAY, 9.1), inc(40 * DAY, 14.4)]; }
     else { return null; }
@@ -1844,9 +1852,10 @@ var ART364 = (function () {
     $("stats").hidden = p === "idle";
     // The credit prompt: only while an outage is open or just ended, and only past 44 minutes (the SLA's first credit level starts under 99.9% in a month).
     var open = live || V.state === "party", longEnough = open ? V.c.downMs >= 44 * 60000 : !!last && last.hours * 60 >= 44;
-    var showOwed = (live || p === "party" || p === "off") && longEnough;
+    var claimWindow = !open && L.claimOpen(last, now());   // after 48 hours the prompt stays while the claim window is open
+    var showOwed = ((live || p === "party" || p === "off") && longEnough) || claimWindow;
     $("owed").hidden = !showOwed; $("lead-why").hidden = !showOwed;      // one rule for the card and the short line in the lead
-    setText($("owed-q"), open ? "Work email down too?" : "Was your work email down too?");
+    setText($("owed-q"), open ? "Work email down too?" : (V.recent ? "Was your work email down too?" : "Was your work email down in the last outage?"));
     // Under the clock when there are no team buttons; under the bet line while the game is on.
     var bn = $("bet-note"), ow = $("owed");
     if (bn && ow && bn.parentNode && bn.parentNode.insertBefore) { bn.parentNode.insertBefore(ow, live ? bn.nextSibling : bn); }
