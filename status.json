@@ -1,16 +1,21 @@
 {
  "v": 2,
- "checked": "2026-11-14T04:00:47Z",
+ "checked": "2026-11-14T04:10:47Z",
  "status": "Service restored",
  "tracking_since": "2026-11-12",
- "current": {
-  "id": "2026-11-12",
-  "start": "2026-11-12T16:17:00Z"
- },
- "incidents": [],
- "ups": 1,
+ "current": null,
+ "incidents": [
+  {
+   "id": "2026-11-12",
+   "start": "2026-11-12T16:17:00Z",
+   "end": "2026-11-14T04:00:47Z",
+   "hours": 35.7,
+   "made364": true
+  }
+ ],
+ "ups": 0,
  "downs": 0,
- "up_since": "2026-11-14T04:00:47Z",
+ "up_since": null,
  "down_since": null,
  "log": [
   {
