@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Past outages · Is it 364 yet?</title>
+<link rel="canonical" href="https://www.isit364yet.com/past/">
+<meta name="description" content="Every Microsoft 365 email outage this site has tracked, newest first.">
+<link rel="preload" href="../fonts/fraunces-soft-800.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: "Fraunces 364"; src: url("../fonts/fraunces-soft-800.woff2") format("woff2"); font-weight: 400 900; font-display: swap; }
+  @font-face { font-family: "Bricolage 364"; src: url("../fonts/bricolage-text.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+  @font-face { font-family: "Fraunces fb"; src: local("Georgia Bold"), local("Georgia-Bold"); font-weight: 400 900; size-adjust: 83.6%; ascent-override: 117%; descent-override: 30.5%; line-gap-override: 0%; }
+  @font-face { font-family: "Bricolage fb"; src: local("Arial"), local("ArialMT"), local("Helvetica"), local("Roboto"); font-weight: 400 700; size-adjust: 110%; ascent-override: 84.5%; descent-override: 24.5%; line-gap-override: 0%; }
+  :root { --sky: #CDEBDD; --ink: #2B2550; --ink-2: #3A3460; --five: #FF5C7A; --four: #FFC233; --white: #FFFFFF;
+    --head: "Fraunces 364", "Fraunces fb", Georgia, serif;
+    --text: "Bricolage 364", "Bricolage fb", system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--sky); color: var(--ink); font: 17px/1.55 var(--text); }
+  main { max-width: 680px; margin: 0 auto; padding: 28px 16px 56px; }
+  h1 { font: 800 clamp(40px, 11vw, 64px)/1.08 var(--head); letter-spacing: -.015em; margin: 0 0 6px; }
+  h2 { font: 800 24px/1.2 var(--head); margin: 26px 0 4px; }
+  p, li { max-width: 62ch; }
+  .card { background: var(--white); border: 3px solid var(--ink); border-radius: 26px; box-shadow: 0 7px 0 var(--ink); padding: 4px 20px 16px; margin-top: 18px; }
+  a { color: var(--ink); }
+  .todo { background: var(--four); border-radius: 6px; padding: 0 6px; font-weight: 700; }
+  .back { display: inline-block; margin-top: 26px; font: 800 18px/1.2 var(--head); }
+  .inc { background: var(--white); border: 3px solid var(--ink); border-radius: 26px; box-shadow: 0 7px 0 var(--ink); padding: 14px 20px 18px; margin-top: 22px; }
+  .inc h2 { margin: 0 0 4px; }
+  .inc .verdict { display: inline-block; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: var(--four); }
+  .inc .verdict.held { background: var(--five); color: var(--white); }
+  .inc dl { margin: 10px 0 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; }
+  .inc dt { font-weight: 700; }
+  .inc dd { margin: 0; }
+  .none { margin-top: 22px; }
+
+</style>
+</head>
+<body>
+<main>
+  <h1>Past outages</h1>
+  <p>Every Microsoft 365 email outage this site has tracked, newest first. The clock starts at the time Microsoft reported, so the times are approximate.</p>
+  <div id="list">
+    <section class="inc" aria-labelledby="i-2026-11-12">
+      <h2 id="i-2026-11-12">12 Nov 2026</h2>
+      <p><span class="verdict">The 5 fell. 365 became 364.</span></p>
+      <dl>
+        <dt>Started</dt><dd>Nov 12, 2026, 8:17 AM Pacific</dd>
+        <dt>Ended</dt><dd>Nov 13, 2026, 8:00 PM Pacific</dd>
+        <dt>Email was down</dt><dd>35.7 hours</dd>
+        <dt>What broke</dt><dd>Microsoft 365 email. Microsoft listed it as incident EX1550543.</dd>
+      </dl>
+    </section>
+  </div>
+  <p class="none" id="none" hidden>Nothing yet. The 5 is resting.</p>
+  <p>On a paid business plan? <a href="https://www.downtimecredit.com/">See if you can ask for a service credit&nbsp;&rarr;</a> Not connected to Microsoft.</p>
+  <p>Microsoft's own page: <a href="https://status.cloud.microsoft/" target="_blank" rel="noopener noreferrer">status.cloud.microsoft</a>.</p>
+  <a class="back" href="../">&larr; Back to the 5</a>
+</main>
+<script>
+(function () {
+  "use strict";
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function pt(ms) {
+    try { return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" }).format(new Date(ms)) + " Pacific"; }
+    catch (e) { return new Date(ms).toUTCString(); }
+  }
+  function day(ms) { var d = new Date(ms); return d.getUTCDate() + " " + MONTHS[d.getUTCMonth()] + " " + d.getUTCFullYear(); }
+  function el(tag, txt, cls) { var e = document.createElement(tag); if (txt) { e.textContent = txt; } if (cls) { e.className = cls; } return e; }
+  fetch("../status.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+    if (!j || !Array.isArray(j.incidents)) { return; }
+    var list = document.getElementById("list"), items = [];
+    j.incidents.forEach(function (x) {
+      var a = Date.parse(x && x.start), b = Date.parse(x && x.end), h = Number(x && x.hours);
+      if (isFinite(a) && isFinite(b) && isFinite(h) && b > a) { items.push({ a: a, b: b, h: h, fell: x.made364 === true || h >= 24 }); }
+    });
+    if (!items.length) { return; }          // keep the built-in entry
+    items.sort(function (p, q) { return q.a - p.a; });
+    list.textContent = "";
+    items.forEach(function (it) {
+      var s = el("section", "", "inc"), id = "i-" + it.a;
+      s.setAttribute("aria-labelledby", id);
+      var h2 = el("h2", day(it.a)); h2.id = id; s.appendChild(h2);
+      var p = el("p"); p.appendChild(el("span", it.fell ? "The 5 fell. 365 became 364." : "The 5 held on. 365 stayed 365.", it.fell ? "verdict" : "verdict held")); s.appendChild(p);
+      var dl = el("dl");
+      [["Started", pt(it.a)], ["Ended", pt(it.b)], ["Email was down", it.h.toFixed(1) + " hours"]].forEach(function (r) { dl.appendChild(el("dt", r[0])); dl.appendChild(el("dd", r[1])); });
+      s.appendChild(dl); list.appendChild(s);
+    });
+  }).catch(function () {});
+})();
+</script>
+<script data-counter>
+  // Cloudflare Web Analytics: counts visits, sets no cookie (see ../privacy.html). It loads on the live site only.
+  if (/(^|\.)isit364yet\.com$/.test(location.hostname)) { (function () { var s = document.createElement("script"); s.type = "module"; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.setAttribute("data-cf-beacon", '{"token": "9e07e581ca6641f9bf94c04455f48ed1"}'); document.head.appendChild(s); })(); }
+</script>
+</body>
+</html>
