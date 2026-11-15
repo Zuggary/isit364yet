@@ -1,7 +1,7 @@
 {
  "v": 2,
- "checked": "2026-11-15T03:10:51Z",
- "status": "Service restored",
+ "checked": "2026-11-15T03:50:48Z",
+ "status": "Operational",
  "tracking_since": "2026-11-12",
  "current": null,
  "incidents": [
@@ -25,6 +25,10 @@
   {
    "t": "2026-11-14T04:00:47Z",
    "status": "Service restored"
+  },
+  {
+   "t": "2026-11-15T03:50:48Z",
+   "status": "Operational"
   }
  ]
 }
