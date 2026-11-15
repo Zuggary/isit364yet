@@ -410,7 +410,7 @@
     <p id="bubble" role="status" hidden></p>
     <div class="say posts between">
 
-      <p class="plaque" id="plaque" hidden>Days since email broke <b id="plaque-n">0</b></p>
+      <p class="plaque" id="plaque" hidden>Days since the last outage ended <b id="plaque-n">0</b></p>
       <div class="stats" id="stats">
         <p class="timer"><b id="n2">24:00:00</b><span id="n2l">until the 5 falls</span></p>
         <p><b id="n1">0 h 0 m</b><span id="n1l">down so far</span></p>
@@ -514,7 +514,7 @@
         </div>
 
         <div class="card">
-          <h3>Mail you didn't get</h3>
+          <h3 id="d-mailh">Mail you didn't get</h3>
           <p class="huge"><b id="d-mail">0</b></p>
           <p class="quiet">including <b id="d-reply">0</b> “reply all” pile-ons <span id="m-note"></span></p>
           <ul class="feed" id="feed" aria-label="Latest email you did not get"></ul>
@@ -1875,7 +1875,7 @@ var ART364 = (function () {
       leadSet("Email came back in time.", "It was down under 24 hours, so 365 stays 365. The 5 climbed back up.");
       stat(2, "365", "still 365"); stat(1, last.hours.toFixed(1) + " h", "email was down");
     } else {
-      leadSet("Microsoft 365 email works.", "If it ever stays down 24 hours, the 5 falls and 365 turns into 364.");
+      leadSet("Microsoft 365 email works.", "If it ever stays down 24 hours, the 5 falls and 365 turns into 364." + (last && last.hours >= 24 ? " It last fell on " + L.dayLabel(last.id) + ", after " + last.hours.toFixed(0) + " hours." : ""));
       setText($("plaque-n"), String(Math.max(0, V.daysSince)));
       stat(2, "", ""); stat(1, "", "");
     }
@@ -2537,6 +2537,7 @@ var ART364 = (function () {
     var m = L.missedCounts($("in-mail").value, 0, downDays());
     setText($("d-mail"), m.mail.toLocaleString());
     setText($("d-reply"), m.reply.toLocaleString());
+    setText($("d-mailh"), !MODEL.current && V.last ? "Mail you missed in the last outage" : "Mail you didn't get");
     setText($("m-note"), MODEL.current ? "so far." : V.last ? "last time." : "");
   }
   function mPush(s) {
