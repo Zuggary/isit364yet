@@ -380,6 +380,7 @@
   /* the footer: small print stays visible, the rest folds away */
   .facts { position: relative; z-index: 1; margin-top: 20px; padding-top: 8px; }
   .parody { font: 700 14px/1.3 var(--text); color: var(--ink-2); margin: 6px 0 0; }
+  .lk { font: inherit; font-size: 14px; color: var(--ink); background: none; border: 0; padding: 12px 4px; min-height: 44px; text-decoration: underline; cursor: pointer; }
   .fine { font-size: 14px; color: var(--ink-2); max-width: 70ch; margin: 0 0 10px; }
   .how summary { cursor: pointer; font: 700 18px/1.3 var(--head); min-height: 44px; display: flex; align-items: center; }
   .howin { padding: 4px 0 8px; }
@@ -529,7 +530,7 @@
   </section>
 
   <footer class="facts wrap" id="facts">
-    <p class="fine"><b>This is a parody.</b> It has no link to Microsoft. <span id="f-start">The clock starts at the time Microsoft reported, so it is approximate.</span> The 5 is safe when Microsoft's outage page shows Microsoft 365 working on 2 checks in a row. <a href="privacy.html">Privacy</a></p>
+    <p class="fine"><b>This is a parody.</b> It has no link to Microsoft. <span id="f-start">The clock starts at the time Microsoft reported, so it is approximate.</span> The 5 is safe when Microsoft's outage page shows Microsoft 365 working on 2 checks in a row. <a href="privacy.html">Privacy</a> <button type="button" id="refresh" class="lk">Check again now</button></p>
     <details class="how">
       <summary>How this works</summary>
       <div class="howin">
@@ -2673,7 +2674,11 @@ var ART364 = (function () {
   setInterval(function () { if (!document.hidden) { tick(); } }, 250);
   wake();
   poll();
-  setInterval(poll, 60000);
+  // The status is read once when the page opens and again only when the visitor asks (AdSense: no refresh without a request).
+  (function () {
+    var b = document.getElementById("refresh"); if (!b) { return; }
+    b.addEventListener("click", function () { b.textContent = "Checking..."; poll(); setTimeout(function () { b.textContent = "Check again now"; }, 1500); });
+  })();
 })();
 </script>
 <script data-counter>
