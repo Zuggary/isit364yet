@@ -14,8 +14,12 @@
 <meta property="og:image" content="https://www.isit364yet.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Is it 364 yet? A Microsoft 365 outage clock.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#CDEBDD">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Is it 364 yet?","url":"https://www.isit364yet.com/"}
+</script>
 <link rel="icon" id="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23CDEBDD'/%3E%3Cpath d='M43 13H24l-2 18c9-5 24-2 24 11 0 14-19 16-28 7' fill='none' stroke='%23FF5C7A' stroke-width='11' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preload" href="fonts/fraunces-soft-800.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -164,7 +168,7 @@
   .chip[aria-pressed="true"]:disabled { opacity: 1; }
   .scrub { margin-top: 10px; }
   .scrub label { display: block; font-size: 15px; font-weight: 700; }
-  .scrub output { display: block; font-weight: 400; font-size: 14.5px; min-height: 22px; }
+  #scrub-out { display: block; font-weight: 400; font-size: 14.5px; min-height: 22px; }
   .scrub input {
     -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 44px; margin: 0; background: transparent; cursor: ew-resize; --now: 50%;
   }
@@ -311,7 +315,7 @@
   tr:last-child td { border-bottom: 0; }
   th { font: 700 14px/1.2 var(--text); color: var(--ink-2); }
   .facts { padding-top: 28px; padding-bottom: 48px; }
-  .facts h3 { font: 700 21px/1.2 var(--head); margin: 14px 0 2px; }
+  .facts .record-heading { font: 700 21px/1.2 var(--head); margin: 14px 0 2px; letter-spacing: normal; text-wrap: wrap; }
   .facts p { margin: 0 0 8px; font-size: 15.5px; color: var(--ink-2); max-width: 62ch; }
   .facts b, .facts strong { color: var(--ink); }
   .facts a { color: var(--ink); }
@@ -396,6 +400,7 @@
 </style>
 </head>
 <body>
+<main>
 <header class="hero wrap">
   <h1><svg class="layer back" viewBox="-20 -6 148 100" aria-hidden="true" focusable="false"><path d="M0 40a34 34 0 0 1 60-18a26 26 0 0 1 44 18a14 14 0 0 1 0 28H0a14 14 0 0 1 0-28z"/></svg><span class="q">Is it 364 yet?</span><span id="answer">Not today.</span><svg class="layer front" viewBox="-30 -34 76 52" aria-hidden="true" focusable="false"><path d="M-22 0q10-14 30-8l14-6l-4 12q-4 14-24 14q-14 0-16-12z" fill="#6E6A8F"/><path d="M-8 -2q8-24 22-26q-2 16-10 28z" fill="#2B2550"/><circle cx="14" cy="-9" r="2" fill="#FFFFFF"/><rect x="20" y="-4" width="20" height="13" rx="2" fill="#FFFFFF" stroke="#2B2550" stroke-width="1.5"/><path d="M20 -4l10 7l10-7" fill="none" stroke="#2B2550" stroke-width="1.5"/><path d="M27 13l6 6M33 13l-6 6" stroke="#FF5C7A" stroke-width="2.4" stroke-linecap="round"/></svg></h1>
   <p class="lead"><svg class="mailx" viewBox="0 0 44 32" aria-hidden="true" focusable="false"><rect x="2" y="4" width="34" height="24" rx="4" fill="#FFFFFF" stroke="#2B2550" stroke-width="3"/><path d="M4 7l15 12L34 7" fill="none" stroke="#2B2550" stroke-width="3" stroke-linejoin="round"/><circle cx="35" cy="9" r="8" fill="#FF5C7A" stroke="#2B2550" stroke-width="2.5"/><path d="M32 6l6 6M38 6l-6 6" stroke="#2B2550" stroke-width="2.5" stroke-linecap="round"/></svg><span id="lead"><b>Microsoft 365 email works.</b> If it ever stays down 24 hours, the 5 falls and 365 turns into 364.</span><span class="why" id="lead-past"><a href="past/">See past outages&nbsp;&rarr;</a></span><span class="why" id="lead-why" hidden>On a paid business plan? <a href="https://www.downtimecredit.com/">See if you can ask for a service credit&nbsp;&rarr;</a></span></p>
@@ -423,7 +428,7 @@
       <p class="note" id="bet-note" role="status">Pick a side. The bet: one slice of cake.</p>
       <p class="owed" id="owed" hidden><b id="owed-q">Work email down too?</b> A business on a paid Microsoft 365 plan may be able to ask for a service credit. Microsoft decides. <a href="https://www.downtimecredit.com/">Check with our free calculator&nbsp;&rarr;</a> <small>Not connected to Microsoft.</small></p>
       <div class="scrub" id="scrub-box">
-        <label for="scrub">Drag through the day <output id="scrub-out" for="scrub"></output></label>
+        <label for="scrub">Drag through the day <span id="scrub-out" aria-hidden="true"></span></label>
         <input type="range" id="scrub" min="0" max="24" step="0.05" value="0">
       </div>
       <div class="scrub boost" id="boost-box" hidden>
@@ -437,7 +442,7 @@
     <div class="hours" id="hours" role="group" aria-label="Guess when it is fixed" hidden></div>
     <div class="tools">
       <button class="btn" id="postcard-btn" type="button">Send a postcard</button>
-      <button class="btn alt" id="snd" type="button" role="switch" aria-checked="false">Sound: off</button>
+      <button class="btn alt" id="snd" type="button" role="switch" aria-label="Sound" aria-checked="false">Sound: off</button>
       <button class="btn alt" id="tilt-btn" type="button" aria-pressed="false" hidden>Let me feel the tilt</button>
     </div>
   </div>
@@ -446,16 +451,15 @@
 
 <dialog id="pc" aria-labelledby="pc-h">
   <h2 id="pc-h">A postcard from the ledge</h2>
-  <img id="pc-img" alt="Postcard" width="1200" height="630">
+  <img id="pc-img" alt="" hidden width="1200" height="630">
   <p class="quiet" id="pc-note" role="status">Drawing the card.</p>
   <div class="row">
     <button class="btn go" id="pc-share" type="button" hidden>Share it</button>
-    <button class="btn" id="pc-save" type="button">Save the image</button>
-    <button class="btn alt" id="pc-close" type="button">Close</button>
+    <button class="btn" id="pc-save" type="button" disabled>Save the image</button>
+    <button class="btn alt" id="pc-close" type="button" autofocus>Close</button>
   </div>
 </dialog>
 
-<main>
   <section class="wrap" aria-labelledby="toys-h">
     <div class="shaft posts">
       <svg class="skyline" style="top:8%" viewBox="0 0 1000 120" aria-hidden="true"><path d="M90 60a34 34 0 0 1 60-18a26 26 0 0 1 44 18a14 14 0 0 1 0 28H90a14 14 0 0 1 0-28z"/></svg>
@@ -476,16 +480,17 @@
           <div class="game">
             <div>
               <div class="hud"><span id="g-score">Caught: 0</span><span id="g-miss">Misses: 0 of 3</span></div>
-              <div class="field"><canvas id="game" width="640" height="800" tabindex="0" role="img" aria-label="Game screen. The score is in the text above it."></canvas></div>
+              <div class="field"><canvas id="game" width="640" height="800" tabindex="0" role="img" aria-label="Game screen" aria-describedby="g-rule g-controls"></canvas></div>
               <div class="pads">
                 <button class="btn alt" id="g-left" type="button" aria-label="Left">&#9664;</button>
-                <button class="btn go" id="g-ok" type="button">Start</button>
+                <button class="btn go" id="g-ok" type="button" aria-describedby="g-controls">Start</button>
                 <button class="btn alt" id="g-right" type="button" aria-label="Right">&#9654;</button>
               </div>
             </div>
             <div class="gside">
               <h3 id="g-name">Inbox Defender</h3>
               <p id="g-rule">Catch the mail. Dodge the scam fish.</p>
+              <p class="sr" id="g-controls"></p>
               <p class="big" id="g-last">Best: 0</p>
             </div>
           </div>
@@ -529,14 +534,16 @@
     </div>
   </section>
 
+</main>
+
   <footer class="facts wrap" id="facts">
-    <p class="fine"><b>This is a parody.</b> It has no link to Microsoft. <span id="f-start">The clock starts at the time Microsoft reported, so it is approximate.</span> The 5 is safe when Microsoft's outage page shows Microsoft 365 working on 2 checks in a row. <a href="privacy">Privacy</a> <button type="button" id="refresh" class="lk">Check again now</button></p>
+    <p class="fine"><b>This is a parody.</b> It has no link to Microsoft. <span id="f-start">The clock starts at the time Microsoft reported, so it is approximate.</span> The 5 is safe when Microsoft's outage page shows Microsoft 365 working on 2 checks in a row. <a href="privacy.html">Privacy</a> <button type="button" id="refresh" class="lk">Check again now</button> <span class="sr" id="status-note" role="status"></span></p>
     <details class="how">
       <summary>How this works</summary>
       <div class="howin">
         <p>When Microsoft 365 email is down one full day, 365 becomes 364. A small robot reads <a href="https://status.cloud.microsoft/" rel="noopener">Microsoft's public outage page</a> every 10 minutes. <b id="checked">It has not reported in yet.</b> <span id="mssays"></span> It can be up to 20 minutes late, and your own mailbox may come back sooner or later.</p>
         <p>The sky follows the clock on the Pacific coast. It is not a weather report.</p>
-        <h3>Every time the 5 nearly fell</h3>
+        <h2 class="record-heading">Every time the 5 nearly fell</h2>
         <p id="f-tally"></p>
         <div class="tablecard">
           <table aria-label="Past times email was down, newest first">
@@ -544,11 +551,10 @@
             <tbody id="record-body"><tr><td colspan="3">Nothing yet.</td></tr></tbody>
           </table>
         </div>
-        <p>No ads yet, no cookies, no sign-in, no real money. A cookie-free counter from Cloudflare counts visits; the <a href="privacy">privacy page</a> says what it sees. Your side, your bingo card and your best scores stay in this browser. Microsoft 365 and Outlook are trademarks of Microsoft Corporation. Real people work long nights to fix these. The first slice of cake is theirs.</p>
+        <p>No ads yet, no cookies, no sign-in, no real money. A cookie-free counter from Cloudflare counts visits; the <a href="privacy.html">privacy page</a> says what it sees. Your side, your bingo card and your best scores stay in this browser. Microsoft 365 and Outlook are trademarks of Microsoft Corporation. Real people work long nights to fix these. The first slice of cake is theirs.</p>
       </div>
     </details>
   </footer>
-</main>
 
 <script>
 /* Is it 364 yet: pure logic. No DOM in this block, so it can be tested with jsc. */
@@ -567,7 +573,7 @@ var M364 = (function () {
     if (!isFinite(a) || !isFinite(b) || b < a) { return null; }
     var hours = typeof x.hours === "number" && isFinite(x.hours) && x.hours >= 0 ? x.hours : (b - a) / 3600000;
     return { id: String(x.id || new Date(a).toISOString().slice(0, 10)).slice(0, 24), start: a, end: b, hours: hours,
-             made364: typeof x.made364 === "boolean" ? x.made364 : hours >= 24 };
+             made364: typeof x.made364 === "boolean" ? x.made364 : b - a >= DAY };
   }
   function statusNormalize(j) {
     if (!j || typeof j !== "object") { return null; }
@@ -1352,8 +1358,7 @@ var ART364 = (function () {
   // ---- Built-in fallback, used only when status.json does not load -----------
   // Start of the outage. 8:17 AM PST on 2026-11-12 is 16:17 UTC (Microsoft's stated start for EX1550543).
   var OUTAGE_START = Date.UTC(2026, 10, 12, 16, 17, 0);
-  // Set this by hand only if status.json is gone and the outage is over, e.g. Date.UTC(2026, 10, 13, 6, 30, 0).
-  var OUTAGE_END = null;
+  var OUTAGE_END = Date.UTC(2026, 10, 14, 4, 0, 47);
   // ----------------------------------------------------------------------------
 
   // ---- feel: change these to tune the 5 ---------------------------------------
@@ -1403,7 +1408,8 @@ var ART364 = (function () {
     else { return null; }
     return j;
   }
-  var MODEL = L.statusNormalize((q && testModel(q)) || { start: iso(OUTAGE_START), end: OUTAGE_END === null ? null : iso(OUTAGE_END) });
+  var sample = q && testModel(q);
+  var MODEL = L.statusNormalize(sample || { start: iso(OUTAGE_START), end: iso(OUTAGE_END) });
   var V = L.view(MODEL, now());
 
   function clock(ms) {
@@ -1417,16 +1423,25 @@ var ART364 = (function () {
   }
   function applyStatus(j) {
     var m = L.statusNormalize(j);
-    if (!m) { return; }
+    if (!m || (!m.checked && !m.current && !m.incidents.length)) { return false; }
     MODEL = m;
     modelChanged();
+    return true;
   }
+  var pendingStatus;
   function poll() {
-    if (q || !window.fetch) { return; }
-    fetch("status.json?t=" + Date.now(), { cache: "no-store" })
+    if (pendingStatus) { return pendingStatus; }
+    if (sample || !window.fetch) { return null; }
+    pendingStatus = fetch("status.json", { cache: "no-cache" })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(applyStatus)
-      .catch(function () {});
+      .catch(function () { return false; })
+      .then(function (ok) {
+        pendingStatus = null;
+        setText($("status-note"), ok ? "" : "Couldn’t load the latest status. Showing the last available record.");
+        return ok;
+      });
+    return pendingStatus;
   }
 
   // ---- sound: off until the switch says otherwise ------------------------------
@@ -1810,7 +1825,7 @@ var ART364 = (function () {
   // =============================================================================
   // Words under the sign, the teams, the scrubber
   // =============================================================================
-  var shownPose = "", shown364 = false, lastIcon = "";
+  var shownPose = "", lastIcon = "";
   // The bold part may hold one link, marked in the string as [[words]] (an explicit marker, so a word that occurs twice cannot be linked by mistake).
   // The link goes to Microsoft's status page. Built from DOM nodes, never from data.
   function leadSet(bold, rest) {
@@ -1861,7 +1876,8 @@ var ART364 = (function () {
     setText($("owed-q"), open ? "Work email down too?" : (V.recent ? "Was your work email down too?" : "Was your work email down in the last outage?"));
     // Under the clock when there are no team buttons; under the bet line while the game is on.
     var bn = $("bet-note"), ow = $("owed");
-    if (bn && ow && bn.parentNode && bn.parentNode.insertBefore) { bn.parentNode.insertBefore(ow, live ? bn.nextSibling : bn); }
+    if (live && bn.nextSibling !== ow) { bn.parentNode.insertBefore(ow, bn.nextSibling); }
+    if (!live && ow.nextSibling !== bn) { bn.parentNode.insertBefore(ow, bn); }
     document.documentElement.style.setProperty("--frac", live ? V.c.frac.toFixed(4) : p === "party" || p === "retired" ? "1" : "0");
     if (live) {
       leadSet("Microsoft 365 has an open incident, says [[Microsoft]].", "If it stays open 24 hours, the 5 falls and 365 turns into 364.");
@@ -1876,7 +1892,7 @@ var ART364 = (function () {
       leadSet("Email came back in time.", "It was down under 24 hours, so 365 stays 365. The 5 climbed back up.");
       stat(2, "365", "still 365"); stat(1, last.hours.toFixed(1) + " h", "email was down");
     } else {
-      leadSet("Microsoft 365 email works.", "If it ever stays down 24 hours, the 5 falls and 365 turns into 364." + (last && last.hours >= 24 ? " It last fell on " + L.dayLabel(last.id) + ", after " + last.hours.toFixed(0) + " hours." : ""));
+      leadSet("Microsoft 365 email works.", "If it ever stays down 24 hours, the 5 falls and 365 turns into 364." + (last && last.made364 ? " It last fell on " + L.dayLabel(last.id) + ", after " + last.hours.toFixed(0) + " hours." : ""));
       setText($("plaque-n"), String(Math.max(0, V.daysSince)));
       stat(2, "", ""); stat(1, "", "");
     }
@@ -1917,7 +1933,7 @@ var ART364 = (function () {
   function showCheck() {
     if (!MODEL.checked) { return; }
     setText($("checked"), "Last check: " + L.ago(MODEL.checked, Date.now()) + ".");
-    var st = MODEL.status || "", plain = /degrad|advisory|slow/i.test(st) ? "slow or partly down" : /operational|healthy|available/i.test(st) ? "all working" : /interrupt|outage|down/i.test(st) ? "down" : st;
+    var st = MODEL.status || "", plain = /degrad|advisory|slow/i.test(st) ? "slow or partly down" : /^(operational|healthy|available)$/i.test(st) ? "all working" : /interrupt|outage|down/i.test(st) ? "down" : st;
     setText($("mssays"), st ? "Microsoft's page last said: " + plain + "." : "");
   }
   function modelChanged() {
@@ -1935,7 +1951,8 @@ var ART364 = (function () {
     V = L.view(MODEL, now());
     if (L.pose(V) !== shownPose) { stateChanged(); }
     else { renderScene(false); words(); }
-    if (V.year364 && !shown364) { shown364 = true; }
+    var currentVerdict = $("current-verdict");
+    if (currentVerdict) { setText(currentVerdict, V.state === "party" ? "Yes. 364." : "hanging on"); }
     setText($("f-tally"), tallyText() + (V.year364 ? " That makes " + V.year + " officially a 364." : ""));
     betRender(); mCalc(); scrubSync();
     if (pose === "live" && heroSeen && !busy && bubble.hidden && Date.now() - lastTouch > 30000) { lastTouch = Date.now(); speak(L.pick(L.QUIPS.chat)); }
@@ -2043,7 +2060,11 @@ var ART364 = (function () {
     var h = nowH();
     previewH += (h - previewH) * Math.min(1, dt * 9);
     if (Math.abs(h - previewH) < 0.06) { previewH = null; scrubBack = false; scrubSync(); }
-    else { scrub.value = previewH.toFixed(2); setText($("scrub-out"), scrubText(previewH, false)); }
+    else {
+      scrub.value = previewH.toFixed(2);
+      var txt = scrubText(previewH, false);
+      setText($("scrub-out"), txt); scrub.setAttribute("aria-valuetext", txt);
+    }
     renderScene(false);
   }
   scrub.addEventListener("input", function () {
@@ -2093,7 +2114,7 @@ var ART364 = (function () {
   // =============================================================================
   // The postcard: the scene and the words on a canvas, then share or save
   // =============================================================================
-  var pc = { fmt: "wide", blob: null, url: "" };
+  var pc = { fmt: "wide", blob: null, build: 0 };
   function pcData() {
     var p = L.pose(V), ctx = betCtx(), mine = ctx && L.betValid(bet, ctx.id) ? bet : null, d = { pose: p, stage: p === "live" ? A.stage(V.c.frac) : 0, sky: A.skyAt(now()), answer: answerFor(p), team: mine ? mine.team : "" };
     var lead = $("lead"), b = lead.firstChild ? lead.firstChild.textContent : "";
@@ -2107,15 +2128,15 @@ var ART364 = (function () {
     var files = [["Fraunces 364", "fonts/fraunces-soft-800.woff2", "400 900"], ["Bricolage 364", "fonts/bricolage-text.woff2", "400 700"]];
     Promise.all(files.map(function (f) {
       return fetch(f[1]).then(function (r) { return r.ok ? r.blob() : null; }).then(function (b) {
-        return b ? new Promise(function (res) { var fr = new FileReader(); fr.onload = function () { res(fr.result); }; fr.onerror = function () { res(null); }; fr.readAsDataURL(b); }) : null;
+        return b ? new Promise(function (res) { var fr = new FileReader(); fr.onload = function () { res(fr.result); }; fr.onerror = fr.onabort = function () { res(null); }; fr.readAsDataURL(b); }) : null;
       }).catch(function () { return null; });
     })).then(function (urls) {
       pc.fontCss = urls.map(function (u, i) { return u ? '@font-face{font-family:"' + files[i][0] + '";src:url(' + u.replace(/^data:[^;]*;/, "data:font/woff2;") + ') format("woff2");font-weight:' + files[i][2] + '}' : ""; }).join("");
       done();
     });
   }
-  function pcBuild() { pcFonts(pcDraw); }
-  function pcDraw() {
+  function pcDraw(build) {
+    if (build !== pc.build) { return; }
     var d = pcData(), W = pc.fmt === "tall" ? 1080 : 1200, H = pc.fmt === "tall" ? 1350 : 630, svg = A.postcard(pc.fmt, (d.fontCss = pc.fontCss, d));
     var img = $("pc-img");
     img.setAttribute("alt", "Postcard. " + d.answer + " " + d.line1 + " " + d.line2 + (d.team ? " I'm on Team " + d.team + "." : ""));
@@ -2125,11 +2146,14 @@ var ART364 = (function () {
     setText($("pc-note"), "Drawing the card.");
     var src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg), im = new Image();
     img.src = src;
+    img.hidden = false;
     im.onload = function () {
+      if (build !== pc.build) { return; }
       try {
         var c = document.createElement("canvas"); c.width = W; c.height = H;
         c.getContext("2d").drawImage(im, 0, 0, W, H);
         c.toBlob(function (b) {
+          if (build !== pc.build) { return; }
           pc.blob = b;
           $("pc-save").disabled = !b;
           var file = b && window.File ? new File([b], "is-it-364-yet.png", { type: "image/png" }) : null;
@@ -2140,7 +2164,11 @@ var ART364 = (function () {
         }, "image/png");
       } catch (e) { setText($("pc-note"), "This browser could not make the image. Take a screenshot instead."); }
     };
-    im.onerror = function () { setText($("pc-note"), "This browser could not make the image. Take a screenshot instead."); };
+    im.onerror = function () {
+      if (build !== pc.build) { return; }
+      img.hidden = true;
+      setText($("pc-note"), "This browser could not make the image. Take a screenshot instead.");
+    };
     im.src = src;
   }
   function pcText() {
@@ -2152,7 +2180,12 @@ var ART364 = (function () {
     if (ev.isTrusted) { countStep("postcard"); }
     var d = $("pc");
     pc.fmt = mq("(max-width: 640px)") ? "tall" : "wide";
-    pcBuild();
+    var build = ++pc.build;
+    pc.blob = null; pc.canShare = false;
+    $("pc-img").hidden = true;
+    $("pc-save").disabled = true; $("pc-share").hidden = true;
+    setText($("pc-note"), "Drawing the card.");
+    pcFonts(function () { pcDraw(build); });
     if (d.showModal) { d.showModal(); } else { d.setAttribute("open", ""); }
   });
   $("pc-close").addEventListener("click", function () { var d = $("pc"); if (d.close) { d.close(); } else { d.removeAttribute("open"); } });
@@ -2177,6 +2210,12 @@ var ART364 = (function () {
     hold: { name: "Hold On, 5", rule: "Tap fast to keep the 5 up for 30 seconds.", key: "is364.hi.hold" },
     whack: { name: "Reply-All Patrol", rule: "Tap each head, or its number key, before Reply All.", key: "is364.hi.whack" },
     boot: { name: "Off and On Again", rule: "Press when the bar is in the green. Get 8.", key: "is364.hi.boot" }
+  };
+  var GAME_KEYS = {
+    inbox: "Use Left and Right arrows to move, and Space to clear the screen.",
+    hold: "Press Space repeatedly to pull.",
+    whack: "Use number keys 1 to 9, or use the arrow keys and press Space or Enter to bonk.",
+    boot: "Press Space or Up Arrow to power on."
   };
   var ORDER = ["inbox", "hold", "whack", "boot"], HI = {};
   ORDER.forEach(function (id) { HI[id] = +load(GAMES[id].key) || 0; });
@@ -2439,6 +2478,7 @@ var ART364 = (function () {
     }
   }
   function shelfDraw() {
+    setText($("g-controls"), "Press Space or Enter to start. " + GAME_KEYS[cur]);
     ORDER.forEach(function (id) {
       $("cab-" + id).setAttribute("aria-pressed", id === cur ? "true" : "false");
       setText($("best-" + id), "Best " + HI[id]);
@@ -2466,7 +2506,10 @@ var ART364 = (function () {
   bindFast($("g-ok"), function () { gAct(); });
   $("g-ok").addEventListener("keydown", function (e) { if (e.repeat) { e.preventDefault(); } });
   // the whole result card is a Play again button for a tap; the real button stays for keyboards
-  res.addEventListener("click", function () { gOverAt = 0; gStart(); });
+  res.addEventListener("click", function () {
+    if (res.contains(document.activeElement)) { $("g-ok").focus(); }
+    gOverAt = 0; gStart();
+  });
   gcv.addEventListener("pointerdown", function (e) {
     if (!gRunning()) { gStart(); return; }
     var r = gcv.getBoundingClientRect(), x = (e.clientX - r.left) / (r.width || 1) * 320, y = (e.clientY - r.top) / (r.height || 1) * 400;
@@ -2578,9 +2621,13 @@ var ART364 = (function () {
       var r = document.createElement("tr");
       cells.forEach(function (s) { var d = document.createElement("td"); d.textContent = s; r.appendChild(d); });
       body.appendChild(r);
+      return r;
     }
     body.textContent = "";
-    if (MODEL.current) { tr([L.dayLabel(MODEL.current.id), "still open", "hanging on"]); }
+    if (MODEL.current) {
+      var row = tr([L.dayLabel(MODEL.current.id), "still open", ""]);
+      row.lastElementChild.id = "current-verdict";
+    }
     for (i = 0; i < MODEL.incidents.length; i++) {
       var inc = MODEL.incidents[i];
       tr([L.dayLabel(inc.id), inc.hours.toFixed(1), inc.made364 ? "Yes. 364." : "No. It held on."]);
@@ -2606,12 +2653,12 @@ var ART364 = (function () {
       typed = (typed + k.toLowerCase()).slice(-3);
       if (typed === "dns") { typed = ""; rig.roll = 1.4; speak("It's always DNS. (The internet's phone book.)"); wake(); }
     }
-    var own = tg && tg.closest ? tg.closest(".pads, .result") : null;
+    if (tg !== gcv) { return; }
     if (!gRunning()) {
-      if (tag === "CANVAS" && (k === " " || k === "Enter")) { gStart(); e.preventDefault(); }
+      if (!e.repeat && (k === " " || k === "Enter")) { gStart(); e.preventDefault(); }
       return;
     }
-    var space = k === " " && !own && tag !== "A";
+    var space = k === " ";
     if (cur === "inbox") {
       if (k === "ArrowLeft" || k === "a" || k === "A") { gMove(-1); e.preventDefault(); }
       else if (k === "ArrowRight" || k === "d" || k === "D") { gMove(1); e.preventDefault(); }
@@ -2620,7 +2667,7 @@ var ART364 = (function () {
       var m = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -3, ArrowDown: 3 }[k];
       if (m) { var nx = cursor + m; if (nx >= 0 && nx < 9 && !(Math.abs(m) === 1 && Math.floor(nx / 3) !== Math.floor(cursor / 3))) { cursor = nx; } cursorOn = true; gDirty = true; e.preventDefault(); }
       else if (/^[1-9]$/.test(k)) { cursor = +k - 1; cursorOn = true; gAct(cursor); e.preventDefault(); }
-      else if (space || (k === "Enter" && !own)) { cursorOn = true; gAct(cursor); e.preventDefault(); }
+      else if (space || k === "Enter") { cursorOn = true; gAct(cursor); e.preventDefault(); }
     } else if ((space || k === "ArrowUp") && !e.repeat) { gAct(); e.preventDefault(); }
   });
 
@@ -2673,12 +2720,24 @@ var ART364 = (function () {
   window.addEventListener("resize", function () { gDirty = true; wake(); if (!rafId) { gameFrame(); } });
   setInterval(function () { if (!document.hidden) { tick(); } }, 250);
   wake();
-  poll();
-  // The status is read once when the page opens and again only when the visitor asks (AdSense: no refresh without a request).
-  (function () {
-    var b = document.getElementById("refresh"); if (!b) { return; }
-    b.addEventListener("click", function () { b.textContent = "Checking..."; poll(); setTimeout(function () { b.textContent = "Check again now"; }, 1500); });
-  })();
+  if (!poll()) {
+    $("refresh").setAttribute("aria-disabled", "true");
+    if (!sample) { setText($("status-note"), "Couldn’t load the latest status. Showing the last available record."); }
+  }
+  $("refresh").addEventListener("click", function () {
+    var b = this;
+    if (b.getAttribute("aria-disabled") === "true") { return; }
+    var request = poll();
+    if (!request) { return; }
+    b.setAttribute("aria-disabled", "true");
+    b.textContent = "Checking...";
+    setText($("status-note"), "Checking…");
+    request.then(function (ok) {
+      b.removeAttribute("aria-disabled");
+      b.textContent = "Check again now";
+      if (ok) { setText($("status-note"), "Latest record loaded."); }
+    });
+  });
 })();
 </script>
 <script data-counter>

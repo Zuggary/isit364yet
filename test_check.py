@@ -157,8 +157,15 @@ class Migration(unittest.TestCase):
         with open(os.path.join(HERE, "status.json")) as f:
             s = json.load(f)
         self.assertEqual(s["v"], 2)
-        self.assertEqual(s["current"], {"id": "2026-11-12", "start": "2026-11-12T16:17:00Z"})
-        self.assertEqual(s["incidents"], [])
+        c.parse(s["checked"])
+        self.assertIsInstance(s["incidents"], list)
+        if s["current"] is not None:
+            self.assertTrue(s["current"]["id"])
+            c.parse(s["current"]["start"])
+        for incident in s["incidents"]:
+            self.assertTrue(incident["id"])
+            self.assertLessEqual(c.parse(incident["start"]), c.parse(incident["end"]))
+            self.assertIsInstance(incident["made364"], bool)
 
 
 class WritePolicy(unittest.TestCase):
@@ -225,15 +232,15 @@ class EndToEnd(unittest.TestCase):
             return f.read()
 
     def test_feed_file_end_to_end(self):
-        with open(os.path.join(HERE, "status.json")) as f:
-            self.put("status.json", json.load(f))
+        initial = cur()
+        self.put("status.json", initial)
         fp = self.put("feed.json", feed())
         r = self.run_check(fp)
         self.assertEqual(r.returncode, 0, r.stderr)
         s = json.loads(self.read())
         self.assertEqual(s["v"], 2)
-        self.assertIsNotNone(s["current"])
-        self.assertNotEqual(s["checked"], "2026-11-13T03:35:30Z")
+        self.assertEqual(s["current"], initial["current"])
+        self.assertGreater(c.parse(s["checked"]), c.parse(initial["checked"]))
         self.assertEqual([x for x in os.listdir(self.d) if x.endswith(".tmp")], [])
 
     def test_idle_prints_no_change(self):

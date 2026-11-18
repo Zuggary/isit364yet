@@ -2,7 +2,7 @@
 """Scorekeeper v2 for isit364yet.com.
 
 Reads Microsoft's public status feed and keeps status.json (version 2):
-one current incident, a list of closed ones. Rules are in CHECKER-NOTES.md.
+one current incident, a list of closed ones. See README.md for the tracking rules.
 On any error this script changes nothing, prints the reason to stderr and exits 1.
 """
 import copy, json, os, sys, tempfile, urllib.request
