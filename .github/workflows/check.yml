@@ -11,7 +11,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       # A failed check turns this step red and stops the job, so nothing is committed.
@@ -22,3 +22,13 @@ jobs:
           git add status.json
           git diff --cached --quiet || git commit -m "score: $(date -u +%H:%MZ)"
           git push
+      # Cloudflare Pages deploy (FA44). Soft-fails so GitHub Pages stays live until cutover.
+      - name: Deploy to Cloudflare Pages
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 07f52611c66e1817e67569f18d643e51
+        run: |
+          rm -rf _site && mkdir _site
+          cp -r $(ls -A | grep -v -E '^(\.git|\.github|_site|check\.py|test_.*\.py|README\.md)$') _site/
+          npx -y wrangler@4 pages deploy _site --project-name isit364yet --branch main --commit-dirty=true
